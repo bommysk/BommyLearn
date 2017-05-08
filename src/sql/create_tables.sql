@@ -52,6 +52,9 @@ CREATE TABLE class (
     id serial PRIMARY KEY,
     name varchar(40) NOT NULL UNIQUE,
     description text NOT NULL,
+    day_schedule varchar(10),
+    start_time time NOT NULL,
+    end_time time NOT NULL,
     start_date date NOT NULL,
     end_date NOT NULL
 );
@@ -79,10 +82,11 @@ CREATE TABLE classschedule (
 );
 
 DROP TABLE IF EXISTS attend CASCADE;
-/*  A set of possible values is: “in progress”, “completed successfully”, “completed partially” and “has not completed class” */
+/*  attendance_outcome possible values are: “in progress”, “completed successfully”, “completed partially” and “has not completed class” */
 CREATE TABLE attend (
-    student_id int NOT NULL,
+    id serial PRIMARY KEY,
     class_id int NOT NULL,
+    student_id int NOT NULL,
     class_enrollment_date date NOT NULL,
     class_drop_date date,
     drop_class_reason text NOT NULL,
@@ -111,26 +115,50 @@ CREATE TABLE grade (
     FOREIGN KEY(assignment_id) REFERENCES assignment ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-DROP TABLE IF EXISTS comment CASCADE;
+DROP TABLE IF EXISTS teachercomment CASCADE;
 
-CREATE TABLE comment (
+CREATE TABLE teachercomment (
+    id serial PRIMARY KEY,
+    comment text NOT NULL,
+    teacher_id int NOT NULL,
+    assignment_id int NOT NULL,
+    student_comment_id int, /* if responding to student comment, this will not be null. */
+    FOREIGN KEY(teacher_id) REFERENCES teacher ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(assignment_id) REFERENCES assignment ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+DROP TABLE IF EXISTS studentcomment CASCADE;
+
+CREATE TABLE studentcomment (
     id serial PRIMARY KEY,
     comment text NOT NULL,
     student_id int NOT NULL,
     assignment_id int NOT NULL,
+    teacher_comment_id int, /* if responding to teacher comment, this will not be null. */
     FOREIGN KEY(student_id) REFERENCES student ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(assignment_id) REFERENCES assignment ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+ALTER TABLE teachercomment 
+   ADD CONSTRAINT fk_studentcomment
+   FOREIGN KEY (student_comment_id) 
+   REFERENCES studentcomment(id);
+
+ALTER TABLE studentcomment 
+   ADD CONSTRAINT fk_teachercomment
+   FOREIGN KEY (teacher_comment_id) 
+   REFERENCES teachercomment(id);
 
 DROP TABLE IF EXISTS forum CASCADE;
 
 CREATE TABLE forum (
     id serial PRIMARY KEY,
-    comment text NOT NULL,
-    student_id int NOT NULL,
+    teacher_comment_id int,
+    student_comment_id int,
     assignment_id int,
     class_id int NOT NULL,
-    FOREIGN KEY(student_id) REFERENCES student ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(teacher_comment_id) REFERENCES teachercomment ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(student_comment_id) REFERENCES studentcomment ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(assignment_id) REFERENCES assignment ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE
 );
