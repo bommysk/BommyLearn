@@ -8,6 +8,6 @@
  *
  * @author shubham.kahal
  */
-public class Task {
+public class Assignment {
     
 }

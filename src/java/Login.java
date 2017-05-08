@@ -158,7 +158,7 @@ public class Login implements Serializable {
         String submittedLogin = loginUI.getLocalValue().toString();
         String submittedPassword = value.toString();
 
-        if (! checkStudentLogin(submittedLogin, submittedPassword)) {
+        if (! checkTeacherLogin(submittedLogin, submittedPassword)) {
             FacesMessage errorMessage = new FacesMessage("Wrong login/password");
             throw new ValidatorException(errorMessage);
         }
