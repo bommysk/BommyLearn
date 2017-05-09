@@ -58,6 +58,11 @@
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
+                            <h:form enctype="multipart/form-data">
+                                            <h:inputFile value="#{assignment.file}">
+                                                <f:ajax listener="#{assignment.save}" />
+                                            </h:inputFile>
+                                        </h:form>
                             <h:dataTable value="#{assignment.getAssignmentList()}" var="assgn" border="1" style="width:100%"
                         styleClass="table table-striped table-bordered table-hover" id="assignmentsTable">
                 
@@ -92,13 +97,10 @@
                                             <h:inputFile value="#{assignment.file}">
                                                 <f:ajax listener="#{assignment.save}" />
                                             </h:inputFile>
+                                            
+                                            <h:commandButton class="btn btn-lg btn-primary btn-block" value="Submit" action="#{assgn.submit(assgn.id)}" />
                                         </h:form>
-                                </h:column>                              
-                                
-                                <h:column>
-                                    <f:facet name="header"> </f:facet>
-                                        <h:commandButton class="btn btn-lg btn-primary btn-block" value="Submit" action="#{assgn.submit(assgn.id)}" />
-                                </h:column>                                
+                                </h:column>                                                           
 
                             </h:dataTable>
                             

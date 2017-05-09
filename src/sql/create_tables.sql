@@ -56,7 +56,7 @@ CREATE TABLE class (
     start_time time NOT NULL,
     end_time time NOT NULL,
     start_date date NOT NULL,
-    end_date NOT NULL
+    end_date date NOT NULL
 );
 
 DROP TABLE IF EXISTS teaches CASCADE;

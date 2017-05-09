@@ -138,9 +138,9 @@ public class Assignment implements Serializable {
         return assignmentList;
     }
 
-    public void save() {
+    public void save(String fileNameAttributes) {
         try (InputStream input = file.getInputStream()) {
-            Files.copy(input, new File("uploads", file.getSubmittedFileName()).toPath());
+            Files.copy(input, new File("uploads", file.getSubmittedFileName() + "_" + fileNameAttributes).toPath());
         }
         catch (IOException e) {
             // Show faces message?
@@ -150,6 +150,6 @@ public class Assignment implements Serializable {
     // This function will consume the id of an assignment that is submitted
     // and appropriate update the database with it.
     public void submit(Integer id) {
-        
+        save(id + "_" + Util.getStudentLogin());
     }
 }
