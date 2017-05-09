@@ -89,7 +89,7 @@ CREATE TABLE attend (
     student_id int NOT NULL,
     class_enrollment_date date NOT NULL,
     class_drop_date date,
-    drop_class_reason text NOT NULL,
+    drop_class_reason text,
     attendance_outcome text NOT NULL,
     FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(student_id) REFERENCES student ON DELETE CASCADE ON UPDATE CASCADE

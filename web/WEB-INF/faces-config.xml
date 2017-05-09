@@ -19,7 +19,7 @@
         </managed-property>
     </managed-bean>
     <managed-bean>
-        <managed-bean-name>teacer</managed-bean-name>
+        <managed-bean-name>teacher</managed-bean-name>
         <managed-bean-class>Teacher</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
         <managed-property>
@@ -30,6 +30,16 @@
     <managed-bean>
         <managed-bean-name>login</managed-bean-name>
         <managed-bean-class>Login</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean> 
+    <managed-bean>
+        <managed-bean-name>class</managed-bean-name>
+        <managed-bean-class>Class</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean> 
+    <managed-bean>
+        <managed-bean-name>assignment</managed-bean-name>
+        <managed-bean-class>Assignment</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean> 
     
