@@ -9,8 +9,14 @@
  * @author shubham.kahal
  */
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.annotation.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.inject.Named;
@@ -19,14 +25,23 @@ import javax.inject.Named;
 @SessionScoped
 @ManagedBean
 public class Class implements Serializable {
+    private DBConnect dbConnect = new DBConnect();
     private String name;
     private String description;
-    private String day_schedule;
+    private String daySchedule;
     private Time startTime;
     private Time endTime;
     private Date startDate;
     private Date endDate;
 
+    public DBConnect getDbConnect() {
+        return dbConnect;
+    }
+
+    public void setDbConnect(DBConnect dbConnect) {
+        this.dbConnect = dbConnect;
+    }
+    
     public String getName() {
         return name;
     }
@@ -43,12 +58,12 @@ public class Class implements Serializable {
         this.description = description;
     }
 
-    public String getDay_schedule() {
-        return day_schedule;
+    public String getDaySchedule() {
+        return daySchedule;
     }
 
-    public void setDay_schedule(String day_schedule) {
-        this.day_schedule = day_schedule;
+    public void setDaySchedule(String daySchedule) {
+        this.daySchedule = daySchedule;
     }
 
     public Time getStartTime() {
@@ -81,5 +96,46 @@ public class Class implements Serializable {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+    
+    public List<Class> getClassList() throws SQLException {
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select * from class");
+        
+        ResultSet result = preparedStatement.executeQuery();
+
+        List<Class> classList = new ArrayList<>();
+    
+        while (result.next()) {
+            Class cl = new Class();
+            
+            cl.setName(result.getString("name"));
+            
+            cl.setDescription(result.getString("description"));
+            
+            cl.setDaySchedule(result.getString("day_schedule"));
+            
+            cl.setStartTime(result.getTime("start_time"));
+            
+            cl.setEndTime(result.getTime("end_time"));
+            
+            cl.setStartDate(result.getDate("start_date"));
+            
+            cl.setEndDate(result.getDate("end_date"));
+   
+            //store all data into a List
+            classList.add(cl);
+        }
+        
+        result.close();
+        con.close();
+    
+        return classList;
     }
 }

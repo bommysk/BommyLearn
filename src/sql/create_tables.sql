@@ -69,7 +69,7 @@ CREATE TABLE teaches (
     FOREIGN KEY(teacher_id) REFERENCES teacher ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-DROP TABLE IF EXISTS classschedule CASCADE;
+DROP TABLE IF EXISTS class_schedule CASCADE;
 
 CREATE TABLE class_schedule (
     class_id int NOT NULL,
@@ -106,14 +106,14 @@ CREATE TABLE assignment (
     FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-DROP TABLE IF EXISTS assignmentsubmit CASCADE;
+DROP TABLE IF EXISTS assignment_submit CASCADE;
 
 CREATE TABLE assignment_submit (
     id serial PRIMARY KEY,
     assignment_id int NOT NULL,
     student_id int NOT NULL,
-    FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY(assignment_id) REFERENCES assignment ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(student_id) REFERENCES student ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 DROP TABLE IF EXISTS grade CASCADE;
@@ -125,7 +125,7 @@ CREATE TABLE grade (
     FOREIGN KEY(assignment_id) REFERENCES assignment ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-DROP TABLE IF EXISTS teachercomment CASCADE;
+DROP TABLE IF EXISTS teacher_comment CASCADE;
 
 CREATE TABLE teacher_comment (
     id serial PRIMARY KEY,
@@ -137,7 +137,7 @@ CREATE TABLE teacher_comment (
     FOREIGN KEY(assignment_id) REFERENCES assignment ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-DROP TABLE IF EXISTS studentcomment CASCADE;
+DROP TABLE IF EXISTS student_comment CASCADE;
 
 CREATE TABLE student_comment (
     id serial PRIMARY KEY,
@@ -149,15 +149,15 @@ CREATE TABLE student_comment (
     FOREIGN KEY(assignment_id) REFERENCES assignment ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-ALTER TABLE teachercomment 
-   ADD CONSTRAINT fk_studentcomment
+ALTER TABLE teacher_comment 
+   ADD CONSTRAINT fk_student_comment
    FOREIGN KEY (student_comment_id) 
-   REFERENCES studentcomment(id);
+   REFERENCES student_comment(id);
 
-ALTER TABLE studentcomment 
-   ADD CONSTRAINT fk_teachercomment
+ALTER TABLE student_comment 
+   ADD CONSTRAINT fk_teacher_comment
    FOREIGN KEY (teacher_comment_id) 
-   REFERENCES teachercomment(id);
+   REFERENCES teacher_comment(id);
 
 DROP TABLE IF EXISTS forum CASCADE;
 
@@ -167,8 +167,8 @@ CREATE TABLE forum (
     student_comment_id int,
     assignment_id int,
     class_id int NOT NULL,
-    FOREIGN KEY(teacher_comment_id) REFERENCES teachercomment ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY(student_comment_id) REFERENCES studentcomment ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(teacher_comment_id) REFERENCES teacher_comment ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(student_comment_id) REFERENCES student_comment ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(assignment_id) REFERENCES assignment ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE
 );

@@ -33,8 +33,13 @@
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean> 
     <managed-bean>
-        <managed-bean-name>class</managed-bean-name>
+        <managed-bean-name>cl</managed-bean-name>
         <managed-bean-class>Class</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean> 
+    <managed-bean>
+        <managed-bean-name>schedule</managed-bean-name>
+        <managed-bean-class>Schedule</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean> 
     <managed-bean>
@@ -136,6 +141,14 @@
         <navigation-case>
             <from-outcome>viewAssignments</from-outcome>
             <to-view-id>/student/assignments.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>viewFeedback</from-outcome>
+            <to-view-id>/student/view-feedback.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>addClasses</from-outcome>
+            <to-view-id>/student/add-classes.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>   
 

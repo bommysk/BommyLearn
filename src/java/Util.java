@@ -68,4 +68,8 @@ public class Util implements Serializable {
         
         return session.getAttribute("teacherLogin").toString();
     }
+    
+    public String refreshAddClass() {
+        return "addClass";
+    }
 }
