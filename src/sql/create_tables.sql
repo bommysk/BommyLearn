@@ -71,7 +71,7 @@ CREATE TABLE teaches (
 
 DROP TABLE IF EXISTS classschedule CASCADE;
 
-CREATE TABLE classschedule (
+CREATE TABLE class_schedule (
     class_id int NOT NULL,
     student_id int NOT NULL,
     teacher_id int NOT NULL,
@@ -106,6 +106,16 @@ CREATE TABLE assignment (
     FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+DROP TABLE IF EXISTS assignmentsubmit CASCADE;
+
+CREATE TABLE assignment_submit (
+    id serial PRIMARY KEY,
+    assignment_id int NOT NULL,
+    student_id int NOT NULL,
+    FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 DROP TABLE IF EXISTS grade CASCADE;
 
 CREATE TABLE grade (
@@ -117,7 +127,7 @@ CREATE TABLE grade (
 
 DROP TABLE IF EXISTS teachercomment CASCADE;
 
-CREATE TABLE teachercomment (
+CREATE TABLE teacher_comment (
     id serial PRIMARY KEY,
     comment text NOT NULL,
     teacher_id int NOT NULL,
@@ -129,7 +139,7 @@ CREATE TABLE teachercomment (
 
 DROP TABLE IF EXISTS studentcomment CASCADE;
 
-CREATE TABLE studentcomment (
+CREATE TABLE student_comment (
     id serial PRIMARY KEY,
     comment text NOT NULL,
     student_id int NOT NULL,
