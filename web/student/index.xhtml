@@ -142,7 +142,7 @@
                 <div class="col-lg-8">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Area Chart Example
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Class Point Distribution
                             <div class="pull-right">
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
@@ -196,7 +196,7 @@
                         <!-- /.panel-heading -->
                         <div class="panel-body">
                             <div class="row">
-                                <div class="col-lg-4">
+                                <div class="col-lg-12">
                                     <div class="table-responsive">
                                          <h:dataTable value="#{schedule.getSchedule()}" var="sched" border="1" style="width:100%"
                         styleClass="table table-striped table-bordered table-hover">
@@ -209,17 +209,27 @@
                                             <h:column>
                                                 <f:facet name="header"> Description </f:facet>
                                                     #{sched.cl.description}
-                                            </h:column>                                                        
-
+                                            </h:column> 
+                                             
+                                            <h:column>
+                                                <f:facet name="header"> Day Schedule </f:facet>
+                                                    #{sched.cl.daySchedule}
+                                            </h:column>
+                                             
+                                            <h:column>
+                                                <f:facet name="header"> Start Time </f:facet>
+                                                    #{sched.cl.startTime}
+                                            </h:column>
+                                            
+                                            <h:column>
+                                                <f:facet name="header"> End Time </f:facet>
+                                                    #{sched.cl.endTime}
+                                            </h:column>                                             
+                                             
                                         </h:dataTable>
                                     </div>
                                     <!-- /.table-responsive -->
                                 </div>
-                                <!-- /.col-lg-4 (nested) -->
-                                <div class="col-lg-8">
-                                    <div id="morris-bar-chart"></div>
-                                </div>
-                                <!-- /.col-lg-8 (nested) -->
                             </div>
                             <!-- /.row -->
                         </div>
@@ -228,7 +238,7 @@
                     <!-- /.panel -->
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-clock-o fa-fw"></i> Responsive Timeline
+                            <i class="fa fa-clock-o fa-fw"></i> Forum
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
@@ -402,7 +412,7 @@
                     <!-- /.panel -->
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Donut Chart Example
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Time Distribution
                         </div>
                         <div class="panel-body">
                             <div id="morris-donut-chart"></div>
