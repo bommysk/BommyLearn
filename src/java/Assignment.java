@@ -152,4 +152,25 @@ public class Assignment implements Serializable {
     public void submit(Integer id) {
         save(id + "_" + Util.getStudentLogin());
     }
+    
+    public void createAssignment() throws SQLException {
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement(
+                        "insert into assignment(name, description, due_date, class_id) " +
+                        "values(?, ?, ?, (select id from class where name = ?))");
+        
+        //get customer data from database
+        preparedStatement.setString(1, this.name);
+        preparedStatement.setString(2, this.description);
+        preparedStatement.setDate(3, new java.sql.Date(this.dueDate.getTime()));
+        preparedStatement.setString(4, this.cl.getName());
+        
+        preparedStatement.executeUpdate();
+    }
 }
