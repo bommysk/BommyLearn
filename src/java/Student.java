@@ -37,6 +37,7 @@ public class Student implements Serializable {
     }
 
     private DBConnect dbConnect = new DBConnect();
+    private Integer id;
     private String studentLogin;
     private String studentPassword;
     private String firstName;
@@ -51,6 +52,14 @@ public class Student implements Serializable {
 
     public void setDbConnect(DBConnect dbConnect) {
         this.dbConnect = dbConnect;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
     
     public String getStudentLogin() {

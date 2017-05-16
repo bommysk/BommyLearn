@@ -42,7 +42,7 @@
     <div id="wrapper">
         
         <!-- Navigation -->
-        <templates:studentDashboardNavigation />
+        <templates:teacherDashboardNavigation />
         
         <div id="page-wrapper">
             <div class="row">
@@ -60,29 +60,24 @@
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <h:dataTable value="#{assignment.getAssignmentList()}" var="assgn" border="1" style="width:100%"
-                        styleClass="table table-striped table-bordered table-hover" id="assignmentsTable">
+                            <h:dataTable value="#{assignment.getSubmittedAssignmentList()}" var="assgn" border="1" style="width:100%"
+                        styleClass="table table-striped table-bordered table-hover" id="submittedAssignmentsTable">
                 
                                 <h:column>
-                                    <f:facet name="header"> Name </f:facet>
-                                        #{assgn.name}
+                                    <f:facet name="header"> Assignment Id </f:facet>
+                                        #{assgn.id}
                                 </h:column>
 
                                 <h:column>
-                                    <f:facet name="header"> Class </f:facet>
-                                        #{assgn.cl.name}
+                                    <f:facet name="header"> Student Id </f:facet>
+                                        #{assgn.student.id}
                                 </h:column>
 
                                 <h:column>
-                                    <f:facet name="header"> Description </f:facet>
-                                        #{assgn.description}
+                                    <f:facet name="header"> Submit Date </f:facet>
+                                        #{assgn.submitDate}
                                 </h:column>
 
-                                <h:column>
-                                    <f:facet name="header"> Due Date </f:facet>
-                                        #{assgn.dueDate}
-                                </h:column>
-                                
                                 <h:column>
                                     <f:facet name="header"> Due Date </f:facet>
                                         #{assgn.dueDate}
@@ -90,14 +85,11 @@
                                 
                                 <h:column>
                                     <f:facet name="header"> File </f:facet>
-                                        <h:form enctype="multipart/form-data">
-                                            <h:inputFile value="#{assignment.file}">
-                                                <f:ajax listener="#{assignment.save}" />
-                                            </h:inputFile>
-                                            
-                                            <h:commandButton class="btn btn-lg btn-primary btn-block" value="Submit" action="#{assgn.submit(assgn.id)}" />
-                                        </h:form>
-                                </h:column>                                                           
+                                    <h:form>
+                                        <h:commandLink action="#{assignment.goGradeAssignment(assgn)}" value="Grade Assignment">
+                                        </h:commandLink>
+                                    </h:form>
+                                </h:column>                                                        
 
                             </h:dataTable>
                             
@@ -140,7 +132,7 @@
     <!-- Page-Level Demo Scripts - Tables - Use for reference -->
     <script>
     $(document).ready(function() {
-        $('#assignmentsTable').DataTable({
+        $('#submittedAssignmentsTable').DataTable({
             responsive: true
         });
     });

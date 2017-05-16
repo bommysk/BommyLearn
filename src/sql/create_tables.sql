@@ -12,16 +12,16 @@ CREATE TABLE student (
 );
 
 INSERT INTO student (login, password, first_name, last_name, email, postal_address, created_date) VALUES 
-('Carla','ECY16XSW7PO','Dora','Page','sapien.molestie.orci@bommy.edu','P.O. Box 602, 840 Ultricies Ave', '04/13/17'),
-('Suki','ABM89EGZ9SM','Ava','Gonzalez','ac.turpis.egestas@bommy.edu','Ap #136-1258 Lorem, St.','08/01/16'),
-('Michelle','NAU18OOK2VQ','Amy','Odom','gravida.nunc@bommy.edu','624-5412 Turpis St.','08/11/16'),
-('Jael','ZAK50BXP3QK','Tamekah','Leach','interdum@bommy.edu','P.O. Box 484, 7208 In St.','06/16/16'),
-('Kadeem','JNT58VUM4UU','Nola','Mclaughlin','quis@bommy.edu','7851 Fames Rd.','12/30/17'),
-('Hu','KHR48YZE5FR','Fatima','Savage','fringilla@bommy.edu','Ap #385-5581 Suspendisse Av.','12/07/16'),
-('Ulysses','ASC93PCO1QL','Addison','Tyson','Fusce.aliquam@bommy.edu','Ap #686-413 Lectus Rd.','11/09/17'),
-('Arsenio','KNR46YPJ9FY','Branden','Lane','libero@bommy.edu','P.O. Box 623, 7050 Metus. Ave','06/27/16'),
-('Wang','PPC26ONX8KS','Fuller','Hayes','Donec@bommy.edu','5986 Cursus, Road','04/26/17'),
-('Len','MXK49VYF6EQ','Damon','Ortiz','Mauris.molestie@bommy.edu','P.O. Box 915, 7507 Sit Road','05/17/17');
+('carla','password','Dora','Page','sapien.molestie.orci@bommy.edu','P.O. Box 602, 840 Ultricies Ave', '04/13/17'),
+('suki','password','Ava','Gonzalez','ac.turpis.egestas@bommy.edu','Ap #136-1258 Lorem, St.','08/01/16'),
+('michelle','password','Amy','Odom','gravida.nunc@bommy.edu','624-5412 Turpis St.','08/11/16'),
+('jael','password','Tamekah','Leach','interdum@bommy.edu','P.O. Box 484, 7208 In St.','06/16/16'),
+('kadeem','password','Nola','Mclaughlin','quis@bommy.edu','7851 Fames Rd.','12/30/17'),
+('hu','password','Fatima','Savage','fringilla@bommy.edu','Ap #385-5581 Suspendisse Av.','12/07/16'),
+('ulysses','password','Addison','Tyson','Fusce.aliquam@bommy.edu','Ap #686-413 Lectus Rd.','11/09/17'),
+('arsenio','password','Branden','Lane','libero@bommy.edu','P.O. Box 623, 7050 Metus. Ave','06/27/16'),
+('wang','password','Fuller','Hayes','Donec@bommy.edu','5986 Cursus, Road','04/26/17'),
+('len','password','Damon','Ortiz','Mauris.molestie@bommy.edu','P.O. Box 915, 7507 Sit Road','05/17/17');
 
 INSERT INTO student (login, password, first_name, last_name, email, postal_address, created_date)
 VALUES('nkahal', 'password', 'Neeraj', 'Kahal', 'nkahal@bommy.edu', '123 Main Street', '04/15/17');
@@ -59,15 +59,30 @@ CREATE TABLE class (
     end_date date NOT NULL
 );
 
+INSERT INTO class(name, description, day_schedule, start_time, end_time, start_date, end_date)
+VALUES('Calculus', 'Calculus', 'MTWR', '04:10 PM', '05:10 PM', '03/31/2017', '06/15/2017');
+
+INSERT INTO class(name, description, day_schedule, start_time, end_time, start_date, end_date)
+VALUES('Medieval History', 'Study of European history from 800-1300.', 'MW', '03:10 PM', '05:10 PM', '03/31/2017', '06/15/2017');
+
+INSERT INTO class(name, description, day_schedule, start_time, end_time, start_date, end_date)
+VALUES('English', 'English', 'TR', '01:10 PM', '03:10 PM', '03/31/2017', '06/15/2017');
+
 DROP TABLE IF EXISTS teaches CASCADE;
 
 CREATE TABLE teaches (
-    class_id int NOT NULL,
     teacher_id int NOT NULL,
+    class_id int NOT NULL,
     PRIMARY KEY(class_id, teacher_id),
     FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(teacher_id) REFERENCES teacher ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+INSERT INTO teaches(teacher_id, class_id) VALUES(1, 1);
+
+INSERT INTO teaches(teacher_id, class_id) VALUES(1, 2);
+
+INSERT INTO teaches(teacher_id, class_id) VALUES(2, 3); 
 
 DROP TABLE IF EXISTS class_schedule CASCADE;
 
@@ -80,6 +95,12 @@ CREATE TABLE class_schedule (
     FOREIGN KEY(student_id) REFERENCES student ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(teacher_id) REFERENCES teacher ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+INSERT INTO class_schedule(class_id, student_id, teacher_id) VALUES(1, 1, 1);
+
+INSERT INTO class_schedule(class_id, student_id, teacher_id) VALUES(2, 1, 1);
+
+INSERT INTO class_schedule(class_id, student_id, teacher_id) VALUES(3, 11, 2);
 
 DROP TABLE IF EXISTS attend CASCADE;
 /*  attendance_outcome possible values are: “in progress”, “completed successfully”, “completed partially” and “has not completed class” */
@@ -106,12 +127,20 @@ CREATE TABLE assignment (
     FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+INSERT INTO assignment(name, description, due_date, class_id) VALUES('Calculus Assgn 1', 'Find the derivative.', '04/5/2017', 1);
+
+INSERT INTO assignment(name, description, due_date, class_id) VALUES('Medieval England', 'Read Ch 1-2.', '04/4/2017', 2);
+
+INSERT INTO assignment(name, description, due_date, class_id) VALUES('Intro Essay', 'Write and essay that describes you.', '04/5/2017', 3);
+
 DROP TABLE IF EXISTS assignment_submit CASCADE;
 
 CREATE TABLE assignment_submit (
     id serial PRIMARY KEY,
     assignment_id int NOT NULL,
     student_id int NOT NULL,
+    file_path text NOT NULL,
+    due_date date NOT NULL,
     FOREIGN KEY(assignment_id) REFERENCES assignment ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(student_id) REFERENCES student ON DELETE CASCADE ON UPDATE CASCADE
 );

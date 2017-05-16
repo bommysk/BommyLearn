@@ -8,11 +8,14 @@
  *
  * @author shubham.kahal
  */
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.Serializable;
-import java.nio.file.Files;
+import java.io.Writer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,6 +23,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 import javax.annotation.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.inject.Named;
@@ -32,9 +36,13 @@ public class Assignment implements Serializable {
     private DBConnect dbConnect = new DBConnect();
     private Class cl;
     private Student student;
+    private Integer id;
     private String name;
     private String description;
     private Date dueDate;
+    private Date submitDate;
+    private String filePath;
+    private String fileContent;
     private Part file; // +getter+setter
 
     public DBConnect getDbConnect() {
@@ -61,6 +69,14 @@ public class Assignment implements Serializable {
         this.student = student;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
@@ -85,6 +101,30 @@ public class Assignment implements Serializable {
         this.dueDate = dueDate;
     }
 
+    public Date getSubmitDate() {
+        return submitDate;
+    }
+
+    public void setSubmitDate(Date submitDate) {
+        this.submitDate = submitDate;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public String getFileContent() {
+        return fileContent;
+    }
+
+    public void setFileContent(String fileContent) {
+        this.fileContent = fileContent;
+    }
+
     public Part getFile() {
         return file;
     }
@@ -104,8 +144,8 @@ public class Assignment implements Serializable {
         PreparedStatement preparedStatement
                 = con.prepareStatement(
                         "select assignment.name as assgn_name, assignment.description as assgn_description, due_date, class.name as class_name from " +
-                        "student join attend on student.id = attend.student_id " +
-                        "join class on class.id = attend.class_id join assignment on class.id = assignment.class_id " +
+                        "student join class_schedule on student.id = class_schedule.student_id " +
+                        "join class on class.id = class_schedule.class_id join assignment on class.id = assignment.class_id " +
                         "where student.login = ?");
         
         //get customer data from database
@@ -137,13 +177,62 @@ public class Assignment implements Serializable {
         
         return assignmentList;
     }
+    
+    public List<Assignment> getSubmittedAssignmentList() throws SQLException {
+
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement(
+                        "select * from assignment_submit");
+        
+        ResultSet result = preparedStatement.executeQuery();
+
+        List<Assignment> submittedAssignmentList = new ArrayList<>();
+
+        while (result.next()) {
+            Assignment assignment = new Assignment();
+            
+            assignment.setId(result.getInt("assignment_id"));
+            
+            assignment.student = new Student();
+            
+            assignment.student.setId(result.getInt("student_id"));
+            
+            assignment.setSubmitDate(result.getDate("submit_date"));
+            
+            assignment.setFilePath(result.getString("file_path"));
+   
+            //store all data into a List
+            submittedAssignmentList.add(assignment);
+        }
+        
+        result.close();
+        con.close();
+        
+        return submittedAssignmentList;
+    }
 
     public void save(String fileNameAttributes) {
-        try (InputStream input = file.getInputStream()) {
-            Files.copy(input, new File("uploads", file.getSubmittedFileName() + "_" + fileNameAttributes).toPath());
-        }
-        catch (IOException e) {
-            // Show faces message?
+        try {
+            fileContent = new Scanner(file.getInputStream())
+                .useDelimiter("\\A").next();
+            
+            System.out.println(fileContent);
+            
+            File assignmentFile = new File("C:\\Users\\shubham.kahal\\Documents\\NetBeansProjects\\BommyLearn\\web\\student\\uploads\\filename.txt");
+            assignmentFile.createNewFile(); // if file already exists will do nothing
+            
+            PrintWriter out = new PrintWriter( "C:\\Users\\shubham.kahal\\Documents\\NetBeansProjects\\BommyLearn\\web\\student\\uploads\\filename.txt" );
+            out.println( fileContent );
+            
+        } catch (IOException e) {
+          // Error handling
+            e.printStackTrace();
         }
     }
     
@@ -151,6 +240,8 @@ public class Assignment implements Serializable {
     // and appropriate update the database with it.
     public void submit(Integer id) {
         save(id + "_" + Util.getStudentLogin());
+        
+        // add to assignment_submit table
     }
     
     public void createAssignment() throws SQLException {
@@ -172,5 +263,16 @@ public class Assignment implements Serializable {
         preparedStatement.setString(4, this.cl.getName());
         
         preparedStatement.executeUpdate();
+    }
+    
+    public String goGradeAssignment(Assignment assignment) {
+        this.id = assignment.id;
+        this.name = assignment.name;
+        this.description = assignment.description;
+        this.dueDate = assignment.dueDate;
+        this.submitDate = assignment.submitDate;
+        this.filePath =  assignment.filePath; 
+        
+        return "gradeIndividualAssignment";
     }
 }

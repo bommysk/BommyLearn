@@ -92,10 +92,9 @@
                                     <f:facet name="header"> File </f:facet>
                                         <h:form enctype="multipart/form-data">
                                             <h:inputFile value="#{assignment.file}">
-                                                <f:ajax listener="#{assignment.save}" />
                                             </h:inputFile>
-                                            
-                                            <h:commandButton class="btn btn-lg btn-primary btn-block" value="Submit" action="#{assgn.submit(assgn.id)}" />
+                                            <br />
+                                            <h:commandButton class="btn btn-sm btn-primary btn-block" value="Submit" action="#{assignment.submit(assgn.id)}" />
                                         </h:form>
                                 </h:column>                                                           
 
