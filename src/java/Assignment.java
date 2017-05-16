@@ -230,6 +230,8 @@ public class Assignment implements Serializable {
             PrintWriter out = new PrintWriter( "C:\\Users\\shubham.kahal\\Documents\\NetBeansProjects\\BommyLearn\\web\\student\\uploads\\filename.txt" );
             out.println( fileContent );
             
+            out.close();
+            
         } catch (IOException e) {
           // Error handling
             e.printStackTrace();
