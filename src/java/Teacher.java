@@ -327,9 +327,9 @@ public class Teacher implements Serializable {
 
        Statement statement = con.createStatement();
 
-       PreparedStatement preparedStatement = con.prepareStatement("update student set password = ? where login = ?");
+       PreparedStatement preparedStatement = con.prepareStatement("update teacher set password = ? where login = ?");
        preparedStatement.setString(1, teacherPassword);
-       preparedStatement.setString(2, Util.getStudentLogin());
+       preparedStatement.setString(2, Util.getTeacherLogin());
        preparedStatement.executeUpdate();
 
        statement.close();
