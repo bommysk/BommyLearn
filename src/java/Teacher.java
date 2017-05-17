@@ -39,6 +39,7 @@ public class Teacher implements Serializable {
     private DBConnect dbConnect = new DBConnect();
     private String teacherLogin;
     private String teacherPassword;
+    private String teacherOldPassword;
     private String firstName;
     private String lastName;
     private String email;
@@ -68,6 +69,14 @@ public class Teacher implements Serializable {
 
     public void setTeacherPassword(String teacherPassword) {
         this.teacherPassword = teacherPassword;
+    }
+
+    public String getTeacherOldPassword() {
+        return teacherOldPassword;
+    }
+
+    public void setTeacherOldPassword(String teacherOldPassword) {
+        this.teacherOldPassword = teacherOldPassword;
     }
 
     public String getFirstName() {
@@ -301,5 +310,66 @@ public class Teacher implements Serializable {
         result.next();
         
         return result.getInt("id");
+    }
+    
+    public void clear() {
+        setTeacherLogin(null);
+        setTeacherPassword(null);
+    }
+    
+    public String changePassword() throws SQLException {
+       Connection con = dbConnect.getConnection();
+
+       if (con == null) {
+           throw new SQLException("Can't get database connection");
+       }
+       con.setAutoCommit(false);
+
+       Statement statement = con.createStatement();
+
+       PreparedStatement preparedStatement = con.prepareStatement("update student set password = ? where login = ?");
+       preparedStatement.setString(1, teacherPassword);
+       preparedStatement.setString(2, Util.getStudentLogin());
+       preparedStatement.executeUpdate();
+
+       statement.close();
+       con.commit();
+       con.close();
+       clear();
+
+       return "index";
+    }
+    
+    public void validateOldPassword(FacesContext context, UIComponent component, Object value)
+            throws ValidatorException, SQLException {
+        
+        String submittedPassword = (String) value;
+
+        Connection con = dbConnect.getConnection();
+        int count;
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+        
+        con.setAutoCommit(false);
+
+        PreparedStatement preparedStatement = con.prepareStatement("select count(*) as count from teacher where login = ? and password = ?");
+        preparedStatement.setString(1, Util.getTeacherLogin());
+        preparedStatement.setString(2, submittedPassword);
+        
+        ResultSet result = preparedStatement.executeQuery();
+        
+        result.next();
+        
+        count = result.getInt("count");
+        
+        if (count == 0) {
+            FacesMessage errorMessage = new FacesMessage("Incorrect old password.");
+            throw new ValidatorException(errorMessage);
+        }
+        
+        result.close();
+        con.close();
     }
 }

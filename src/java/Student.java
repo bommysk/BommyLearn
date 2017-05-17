@@ -40,6 +40,7 @@ public class Student implements Serializable {
     private Integer id;
     private String studentLogin;
     private String studentPassword;
+    private String studentOldPassword;
     private String firstName;
     private String lastName;
     private String email;
@@ -76,6 +77,14 @@ public class Student implements Serializable {
 
     public void setStudentPassword(String studentPassword) {
         this.studentPassword = studentPassword;
+    }
+
+    public String getStudentOldPassword() {
+        return studentOldPassword;
+    }
+
+    public void setStudentOldPassword(String studentOldPassword) {
+        this.studentOldPassword = studentOldPassword;
     }
 
     public String getFirstName() {
@@ -174,7 +183,7 @@ public class Student implements Serializable {
         con.commit();
         con.close();
                 
-        return "adminDashboard.xhtml";
+        return "viewStudents";
     }
     
     public void validateLogin(FacesContext context, UIComponent component, Object value)
@@ -299,5 +308,66 @@ public class Student implements Serializable {
         result.next();
         
         return result.getInt("id");
+    }
+    
+    public void clear() {
+        setStudentLogin(null);
+        setStudentPassword(null);
+    }
+    
+    public String changePassword() throws SQLException {
+       Connection con = dbConnect.getConnection();
+
+       if (con == null) {
+           throw new SQLException("Can't get database connection");
+       }
+       con.setAutoCommit(false);
+
+       Statement statement = con.createStatement();
+
+       PreparedStatement preparedStatement = con.prepareStatement("update student set password = ? where login = ?");
+       preparedStatement.setString(1, studentPassword);
+       preparedStatement.setString(2, Util.getStudentLogin());
+       preparedStatement.executeUpdate();
+
+       statement.close();
+       con.commit();
+       con.close();
+       clear();
+
+       return "index";
+    }
+    
+    public void validateOldPassword(FacesContext context, UIComponent component, Object value)
+            throws ValidatorException, SQLException {
+        
+        String submittedPassword = (String) value;
+
+        Connection con = dbConnect.getConnection();
+        int count;
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+        
+        con.setAutoCommit(false);
+
+        PreparedStatement preparedStatement = con.prepareStatement("select count(*) as count from student where login = ? and password = ?");
+        preparedStatement.setString(1, Util.getStudentLogin());
+        preparedStatement.setString(2, submittedPassword);
+        
+        ResultSet result = preparedStatement.executeQuery();
+        
+        result.next();
+        
+        count = result.getInt("count");
+        
+        if (count == 0) {
+            FacesMessage errorMessage = new FacesMessage("Incorrect old password.");
+            throw new ValidatorException(errorMessage);
+        }
+        
+        result.close();
+        con.close();
     }
 }

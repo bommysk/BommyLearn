@@ -50,9 +50,20 @@
                     <h1 class="page-header">Assignments</h1>
                 </div>
                 <!-- /.col-lg-12 -->
+                <!-- Nav tabs -->
+                <ul class="nav nav-pills nav-justified" role="tablist">
+                    <li id="ungradedAssignmentsTab" class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#ungradedAssignments" role="tab">Ungraded Assignments</a>
+                    </li>
+                    <li id="gradedAssignmentsTab" class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#gradedAssignments" role="tab">Graded Assignments</a>
+                    </li>
+                </ul>
+                
+                <br />
             </div>
             <!-- /.row -->
-            <div class="row">
+            <div id="ungradedAssignments" class="row" style="display:none">
                 <div class="col-lg-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -107,7 +118,7 @@
                 <!-- /.col-lg-12 -->
             </div>    
                 <!-- /.row -->
-            <div class="row">
+            <div id="gradedAssignments" class="row" style="display:none">
                 <div class="col-lg-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -193,6 +204,18 @@
         
         $('#gradedAssignmentsTable').DataTable({
             responsive: true
+        });
+        
+        $('#ungradedAssignmentsTab a').click(function (e) {
+            e.preventDefault();
+            $('#gradedAssignments').hide();
+            $('#ungradedAssignments').show();
+        });
+        
+        $('#gradedAssignmentsTab a').click(function (e) {
+            e.preventDefault();
+            $('#ungradedAssignments').hide();
+            $('#gradedAssignments').show();
         });
     });
     </script>
