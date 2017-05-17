@@ -15,7 +15,7 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
 
-    <title>View Feedback</title>
+    <title>Assignments</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
@@ -47,7 +47,7 @@
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header">Feedback</h1>
+                    <h1 class="page-header">Assignments</h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -60,7 +60,7 @@
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <h:dataTable value="#{assignment.getAssignmentList()}" var="assgn" border="1" style="width:100%"
+                            <h:dataTable value="#{assignment.getGradedAssignmentListByStudent()}" var="assgn" border="1" style="width:100%"
                         styleClass="table table-striped table-bordered table-hover" id="assignmentsTable">
                 
                                 <h:column>
@@ -84,20 +84,17 @@
                                 </h:column>
                                 
                                 <h:column>
-                                    <f:facet name="header"> Due Date </f:facet>
-                                        #{assgn.dueDate}
-                                </h:column>
+                                    <f:facet name="header"> Grade </f:facet>
+                                        #{assgn.grade}
+                                </h:column>                                
                                 
                                 <h:column>
                                     <f:facet name="header"> File </f:facet>
-                                        <h:form enctype="multipart/form-data">
-                                            <h:inputFile value="#{assignment.file}">
-                                                <f:ajax listener="#{assignment.save}" />
-                                            </h:inputFile>
-                                            
-                                            <h:commandButton class="btn btn-lg btn-primary btn-block" value="Submit" action="#{assgn.submit(assgn.id)}" />
-                                        </h:form>
-                                </h:column>                                                           
+                                    <h:form>
+                                        <h:commandLink action="#{assignment.viewGradedAssignment(assgn)}" value="View Assignment">
+                                        </h:commandLink>
+                                    </h:form>
+                                </h:column>  
 
                             </h:dataTable>
                             

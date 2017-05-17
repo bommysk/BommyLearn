@@ -164,7 +164,7 @@
         </navigation-case>
         <navigation-case>
             <from-outcome>viewFeedback</from-outcome>
-            <to-view-id>/teacher/view-feedback.xhtml</to-view-id>
+            <to-view-id>/teacher/viewFeedback.xhtml</to-view-id>
         </navigation-case>
         <navigation-case>
             <from-outcome>addClasses</from-outcome>
@@ -306,7 +306,7 @@
         </navigation-case>
         <navigation-case>
             <from-outcome>viewFeedback</from-outcome>
-            <to-view-id>/student/view-feedback.xhtml</to-view-id>
+            <to-view-id>/student/viewFeedback.xhtml</to-view-id>
         </navigation-case>
         <navigation-case>
             <from-outcome>addClasses</from-outcome>
@@ -332,7 +332,7 @@
         </navigation-case>
         <navigation-case>
             <from-outcome>viewFeedback</from-outcome>
-            <to-view-id>/student/view-feedback.xhtml</to-view-id>
+            <to-view-id>/student/viewFeedback.xhtml</to-view-id>
         </navigation-case>
         <navigation-case>
             <from-outcome>addClasses</from-outcome>
@@ -358,13 +358,61 @@
         </navigation-case>
         <navigation-case>
             <from-outcome>viewFeedback</from-outcome>
-            <to-view-id>/student/view-feedback.xhtml</to-view-id>
+            <to-view-id>/student/viewFeedback.xhtml</to-view-id>
         </navigation-case>
         <navigation-case>
             <from-outcome>addClasses</from-outcome>
             <to-view-id>/student/add-classes.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>   
+    
+    <navigation-rule>
+        <from-view-id>
+            /student/viewFeedback.xhtml
+        </from-view-id>
+        <navigation-case>
+            <from-outcome>logout</from-outcome>
+            <to-view-id>/index.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>userProfile</from-outcome>
+            <to-view-id>/student/userProfile.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>viewAssignments</from-outcome>
+            <to-view-id>/student/assignments.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>viewFeedback</from-outcome>
+            <to-view-id>/student/viewFeedback.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>viewGradedAssignment</from-outcome>
+            <to-view-id>/student/viewGradedAssignment.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>
+            /student/viewGradedAssignment.xhtml
+        </from-view-id>
+        <navigation-case>
+            <from-outcome>logout</from-outcome>
+            <to-view-id>/index.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>userProfile</from-outcome>
+            <to-view-id>/student/userProfile.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>viewAssignments</from-outcome>
+            <to-view-id>/student/assignments.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>viewFeedback</from-outcome>
+            <to-view-id>/student/viewFeedback.xhtml</to-view-id>
+        </navigation-case>        
+    </navigation-rule>
     
     <navigation-rule>
         <from-view-id>
@@ -384,7 +432,7 @@
         </navigation-case>
         <navigation-case>
             <from-outcome>viewFeedback</from-outcome>
-            <to-view-id>/student/view-feedback.xhtml</to-view-id>
+            <to-view-id>/student/viewFeedback.xhtml</to-view-id>
         </navigation-case>
         <navigation-case>
             <from-outcome>addClasses</from-outcome>

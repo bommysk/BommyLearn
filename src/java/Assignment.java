@@ -37,6 +37,7 @@ public class Assignment implements Serializable {
     private Class cl;
     private Student student;
     private Integer id;
+    private Integer assignmentSubmitId;
     private String name;
     private String description;
     private Date dueDate;
@@ -78,6 +79,14 @@ public class Assignment implements Serializable {
         this.id = id;
     }
 
+    public Integer getAssignmentSubmitId() {
+        return assignmentSubmitId;
+    }
+
+    public void setAssignmentSubmitId(Integer assignmentSubmitId) {
+        this.assignmentSubmitId = assignmentSubmitId;
+    }
+    
     public String getName() {
         return name;
     }
@@ -200,9 +209,9 @@ public class Assignment implements Serializable {
         }
 
         PreparedStatement preparedStatement
-                = con.prepareStatement("select assignment.id as assignment_id, assignment_submit.student_id, assignment_submit.submit_date,"
+                = con.prepareStatement("select assignment.id as assignment_id, assignment_submit.id as assignment_submit_id, assignment_submit.student_id, assignment_submit.submit_date,"
                         + " assignment.due_date, assignment_submit.file_path from assignment_submit join assignment on"
-                        + " assignment_submit.assignment_id = assignment.id;");
+                        + " assignment_submit.assignment_id = assignment.id where graded = 0;");
         
         ResultSet result = preparedStatement.executeQuery();
 
@@ -213,6 +222,8 @@ public class Assignment implements Serializable {
             
             assignment.setId(result.getInt("assignment_id"));
             
+            assignment.setAssignmentSubmitId(result.getInt("assignment_submit_id"));
+            
             assignment.student = new Student();
             
             assignment.student.setId(result.getInt("student_id"));
@@ -222,6 +233,50 @@ public class Assignment implements Serializable {
             assignment.setDueDate(result.getDate("due_date"));
             
             assignment.setFilePath(result.getString("file_path"));
+   
+            //store all data into a List
+            submittedAssignmentList.add(assignment);
+        }
+        
+        result.close();
+        con.close();
+        
+        return submittedAssignmentList;
+    }
+    
+    public List<Assignment> getGradedAssignmentList() throws SQLException {
+
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select assignment.id as assignment_id, assignment_submit.id as assignment_submit_id, assignment_submit.student_id, assignment_submit.submit_date,"
+                        + " assignment.due_date, assignment_submit.grade from assignment_submit join assignment on"
+                        + " assignment_submit.assignment_id = assignment.id where graded = 1;");
+        
+        ResultSet result = preparedStatement.executeQuery();
+
+        List<Assignment> submittedAssignmentList = new ArrayList<>();
+
+        while (result.next()) {
+            Assignment assignment = new Assignment();
+            
+            assignment.setId(result.getInt("assignment_id"));
+            
+            assignment.setAssignmentSubmitId(result.getInt("assignment_submit_id"));
+            
+            assignment.student = new Student();
+            
+            assignment.student.setId(result.getInt("student_id"));
+            
+            assignment.setSubmitDate(result.getDate("submit_date"));
+            
+            assignment.setDueDate(result.getDate("due_date"));
+            
+            assignment.setGrade(result.getInt("grade"));
    
             //store all data into a List
             submittedAssignmentList.add(assignment);
@@ -304,16 +359,30 @@ public class Assignment implements Serializable {
     
     public String goGradeAssignment(Assignment assignment) {
         this.id = assignment.id;
+        this.assignmentSubmitId = assignment.assignmentSubmitId;
+        this.name = assignment.name;
+        this.description = assignment.description;
+        this.dueDate = assignment.dueDate;
+        this.submitDate = assignment.submitDate;
+        this.filePath =  assignment.filePath;
+        
+        return "gradeIndividualAssignment";
+    }
+    
+    public String viewGradedAssignment(Assignment assignment) {
+        this.id = assignment.id;
+        this.assignmentSubmitId = assignment.assignmentSubmitId;
         this.name = assignment.name;
         this.description = assignment.description;
         this.dueDate = assignment.dueDate;
         this.submitDate = assignment.submitDate;
         this.filePath =  assignment.filePath; 
+        this.grade = assignment.grade;
         
-        return "gradeIndividualAssignment";
+        return "viewGradedAssignment";
     }
     
-    public String gradeAssignment(Integer id) throws SQLException {
+    public String gradeAssignment(Integer submitId) throws SQLException {
         Connection con = dbConnect.getConnection();
 
         if (con == null) {
@@ -325,10 +394,63 @@ public class Assignment implements Serializable {
         
         //get customer data from database
         preparedStatement.setInt(1, this.grade);
-        preparedStatement.setInt(2, id);
+        preparedStatement.setInt(2, submitId);
         
         preparedStatement.executeUpdate();
         
         return "gradeAssignments";
+    }
+    
+    public List<Assignment> getGradedAssignmentListByStudent() throws SQLException {
+
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select assignment.name as assignment_name, class.name as class_name, assignment.description as assignment_description, assignment_submit.submit_date,"
+                        + " assignment.due_date, assignment_submit.id as assignment_submit_id, assignment_submit.file_path, assignment_submit.grade from assignment_submit join assignment on"
+                        + " assignment_submit.assignment_id = assignment.id join class on assignment.class_id = class.id where graded = 1 and assignment_submit.student_id ="
+                        + " (select id from student where login = ?);");
+        
+        preparedStatement.setString(1, Util.getStudentLogin());
+        
+        ResultSet result = preparedStatement.executeQuery();
+
+        List<Assignment> gradedAssignmentList = new ArrayList<>();
+
+        while (result.next()) {
+            Assignment assignment = new Assignment();
+            
+            assignment.setName(result.getString("assignment_name")); 
+            
+            Class cl = new Class();
+            
+            cl.setName(result.getString("class_name"));
+            
+            assignment.setCl(cl);
+            
+            assignment.setDescription(result.getString("assignment_description"));
+            
+            assignment.setAssignmentSubmitId(result.getInt("assignment_submit_id"));
+            
+            assignment.setSubmitDate(result.getDate("submit_date"));
+            
+            assignment.setDueDate(result.getDate("due_date"));
+            
+            assignment.setFilePath(result.getString("file_path"));
+            
+            assignment.setGrade(result.getInt("grade"));
+   
+            //store all data into a List
+            gradedAssignmentList.add(assignment);
+        }
+        
+        result.close();
+        con.close();
+        
+        return gradedAssignmentList;
     }
 }
