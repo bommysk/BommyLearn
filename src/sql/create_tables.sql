@@ -131,7 +131,7 @@ INSERT INTO assignment(name, description, due_date, class_id) VALUES('Calculus A
 
 INSERT INTO assignment(name, description, due_date, class_id) VALUES('Medieval England', 'Read Ch 1-2.', '04/4/2017', 2);
 
-INSERT INTO assignment(name, description, due_date, class_id) VALUES('Intro Essay', 'Write and essay that describes you.', '04/5/2017', 3);
+INSERT INTO assignment(name, description, due_date, class_id) VALUES('Intro Essay', 'Write an essay that describes you.', '04/5/2017', 3);
 
 DROP TABLE IF EXISTS assignment_submit CASCADE;
 
@@ -140,18 +140,11 @@ CREATE TABLE assignment_submit (
     assignment_id int NOT NULL,
     student_id int NOT NULL,
     file_path text NOT NULL,
-    due_date date NOT NULL,
+    submit_date date NOT NULL,
+    graded int NOT NULL,
+    grade int,
     FOREIGN KEY(assignment_id) REFERENCES assignment ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(student_id) REFERENCES student ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-DROP TABLE IF EXISTS grade CASCADE;
-
-CREATE TABLE grade (
-    id serial PRIMARY KEY,
-    points int NOT NULL,
-    assignment_id int NOT NULL,
-    FOREIGN KEY(assignment_id) REFERENCES assignment ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 DROP TABLE IF EXISTS teacher_comment CASCADE;

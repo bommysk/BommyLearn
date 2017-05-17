@@ -193,6 +193,32 @@
     
     <navigation-rule>
         <from-view-id>
+            /teacher/gradeIndividualAssignment.xhtml
+        </from-view-id>
+        <navigation-case>
+            <from-outcome>index</from-outcome>
+            <to-view-id>/teacher/index.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>logout</from-outcome>
+            <to-view-id>/teacherLogin.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>createAssignments</from-outcome>
+            <to-view-id>/teacher/createAssignments.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>gradeAssignments</from-outcome>
+            <to-view-id>/teacher/gradeAssignments.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>gradeIndividualAssignment</from-outcome>
+            <to-view-id>/teacher/gradeIndividualAssignment.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>
             /student/index.xhtml
         </from-view-id>
         <navigation-case>

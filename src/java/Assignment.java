@@ -40,7 +40,8 @@ public class Assignment implements Serializable {
     private String name;
     private String description;
     private Date dueDate;
-    private Date submitDate;
+    private Date submitDate = new Date();
+    private Integer grade;
     private String filePath;
     private String fileContent;
     private Part file; // +getter+setter
@@ -109,6 +110,14 @@ public class Assignment implements Serializable {
         this.submitDate = submitDate;
     }
 
+    public Integer getGrade() {
+        return grade;
+    }
+
+    public void setGrade(Integer grade) {
+        this.grade = grade;
+    }
+
     public String getFilePath() {
         return filePath;
     }
@@ -143,10 +152,12 @@ public class Assignment implements Serializable {
 
         PreparedStatement preparedStatement
                 = con.prepareStatement(
-                        "select assignment.name as assgn_name, assignment.description as assgn_description, due_date, class.name as class_name from " +
+                        "select assignment.id as assgn_id, assignment.name as assgn_name, assignment.description as assgn_description, " +
+                        "assignment.due_date, class.name as class_name from " +
                         "student join class_schedule on student.id = class_schedule.student_id " +
                         "join class on class.id = class_schedule.class_id join assignment on class.id = assignment.class_id " +
-                        "where student.login = ?");
+                        "left join assignment_submit on assignment.id = assignment_submit.assignment_id " +
+                        "where student.login = ? and assignment_submit.id is null");
         
         //get customer data from database
         preparedStatement.setString(1, Util.getStudentLogin());
@@ -157,6 +168,8 @@ public class Assignment implements Serializable {
 
         while (result.next()) {
             Assignment assignment = new Assignment();
+            
+            assignment.setId(result.getInt("assgn_id"));
             
             assignment.setName(result.getString("assgn_name"));
             
@@ -187,8 +200,9 @@ public class Assignment implements Serializable {
         }
 
         PreparedStatement preparedStatement
-                = con.prepareStatement(
-                        "select * from assignment_submit");
+                = con.prepareStatement("select assignment.id as assignment_id, assignment_submit.student_id, assignment_submit.submit_date,"
+                        + " assignment.due_date, assignment_submit.file_path from assignment_submit join assignment on"
+                        + " assignment_submit.assignment_id = assignment.id;");
         
         ResultSet result = preparedStatement.executeQuery();
 
@@ -204,6 +218,8 @@ public class Assignment implements Serializable {
             assignment.student.setId(result.getInt("student_id"));
             
             assignment.setSubmitDate(result.getDate("submit_date"));
+            
+            assignment.setDueDate(result.getDate("due_date"));
             
             assignment.setFilePath(result.getString("file_path"));
    
@@ -224,10 +240,10 @@ public class Assignment implements Serializable {
             
             System.out.println(fileContent);
             
-            File assignmentFile = new File("C:\\Users\\shubham.kahal\\Documents\\NetBeansProjects\\BommyLearn\\web\\student\\uploads\\filename.txt");
+            File assignmentFile = new File( "../student/uploads/" + fileNameAttributes + ".txt" );
             assignmentFile.createNewFile(); // if file already exists will do nothing
             
-            PrintWriter out = new PrintWriter( "C:\\Users\\shubham.kahal\\Documents\\NetBeansProjects\\BommyLearn\\web\\student\\uploads\\filename.txt" );
+            PrintWriter out = new PrintWriter( "../student/uploads/" + fileNameAttributes + ".txt" );
             out.println( fileContent );
             
             out.close();
@@ -240,10 +256,29 @@ public class Assignment implements Serializable {
     
     // This function will consume the id of an assignment that is submitted
     // and appropriate update the database with it.
-    public void submit(Integer id) {
-        save(id + "_" + Util.getStudentLogin());
+    public void submit(Integer id) throws SQLException {
+        String fileNameAttributes = id + "_" + Util.getStudentLogin();
+        
+        save(fileNameAttributes);
         
         // add to assignment_submit table
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement(
+                        "insert into assignment_submit(assignment_id, student_id, file_path, submit_date, graded) " +
+                        "values(?, ?, ?, ?, 0)");
+        
+        preparedStatement.setInt(1, id);
+        preparedStatement.setInt(2, (new Student()).getStudentId(Util.getStudentLogin()));
+        preparedStatement.setString(3, "../student/uploads/" + fileNameAttributes + ".txt");
+        preparedStatement.setDate(4, new java.sql.Date(this.submitDate.getTime()));
+        
+        preparedStatement.executeUpdate();
     }
     
     public void createAssignment() throws SQLException {
@@ -276,5 +311,24 @@ public class Assignment implements Serializable {
         this.filePath =  assignment.filePath; 
         
         return "gradeIndividualAssignment";
+    }
+    
+    public String gradeAssignment(Integer id) throws SQLException {
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("update assignment_submit set graded = 1, grade = ? where id = ?");
+        
+        //get customer data from database
+        preparedStatement.setInt(1, this.grade);
+        preparedStatement.setInt(2, id);
+        
+        preparedStatement.executeUpdate();
+        
+        return "gradeAssignments";
     }
 }
