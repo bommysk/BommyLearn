@@ -59,6 +59,9 @@ public class Util implements Serializable {
         HttpSession session = (HttpSession) FacesContext.getCurrentInstance()
                         .getExternalContext().getSession(false);
         
+        System.out.println("STUDENT SESSION:");
+        System.out.println(session.getAttribute("studentLogin").toString());
+        
         return session.getAttribute("studentLogin").toString();
     }
     

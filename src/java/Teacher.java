@@ -372,4 +372,27 @@ public class Teacher implements Serializable {
         result.close();
         con.close();
     }
+    
+    public String setUserProfile() throws SQLException  {
+        Connection con = dbConnect.getConnection();
+        int count;
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+        
+        con.setAutoCommit(false);
+
+        PreparedStatement preparedStatement = con.prepareStatement("select first_name, last_name from teacher where login = ?");
+        preparedStatement.setString(1, Util.getTeacherLogin());
+        
+        ResultSet result = preparedStatement.executeQuery();
+        
+        result.next();
+        
+        this.firstName = result.getString("first_name");
+        this.lastName = result.getString("last_name");
+        
+        return "userProfile";
+    }
 }
