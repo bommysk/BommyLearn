@@ -133,6 +133,10 @@
             <to-view-id>/teacherLogin.xhtml</to-view-id>
         </navigation-case>
         <navigation-case>
+            <from-outcome>userProfile</from-outcome>
+            <to-view-id>/teacher/userProfile.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
             <from-outcome>createAssignments</from-outcome>
             <to-view-id>/teacher/createAssignments.xhtml</to-view-id>
         </navigation-case>
@@ -141,6 +145,32 @@
             <to-view-id>/teacher/gradeAssignments.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>
+            /teacher/userProfile.xhtml
+        </from-view-id>
+        <navigation-case>
+            <from-outcome>logout</from-outcome>
+            <to-view-id>/index.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>userProfile</from-outcome>
+            <to-view-id>/teacher/userProfile.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>viewAssignments</from-outcome>
+            <to-view-id>/teacher/assignments.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>viewFeedback</from-outcome>
+            <to-view-id>/teacher/view-feedback.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>addClasses</from-outcome>
+            <to-view-id>/teacher/add-classes.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>   
     
     <navigation-rule>
         <from-view-id>
@@ -155,6 +185,10 @@
             <to-view-id>/teacherLogin.xhtml</to-view-id>
         </navigation-case>
         <navigation-case>
+            <from-outcome>userProfile</from-outcome>
+            <to-view-id>/teacher/userProfile.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
             <from-outcome>createAssignments</from-outcome>
             <to-view-id>/teacher/createAssignments.xhtml</to-view-id>
         </navigation-case>
@@ -162,7 +196,6 @@
             <from-outcome>gradeAssignments</from-outcome>
             <to-view-id>/teacher/gradeAssignments.xhtml</to-view-id>
         </navigation-case>
-
     </navigation-rule>
     
     <navigation-rule>
@@ -176,6 +209,10 @@
         <navigation-case>
             <from-outcome>logout</from-outcome>
             <to-view-id>/teacherLogin.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>userProfile</from-outcome>
+            <to-view-id>/teacher/userProfile.xhtml</to-view-id>
         </navigation-case>
         <navigation-case>
             <from-outcome>createAssignments</from-outcome>
@@ -202,6 +239,10 @@
         <navigation-case>
             <from-outcome>logout</from-outcome>
             <to-view-id>/teacherLogin.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>userProfile</from-outcome>
+            <to-view-id>/teacher/userProfile.xhtml</to-view-id>
         </navigation-case>
         <navigation-case>
             <from-outcome>createAssignments</from-outcome>
