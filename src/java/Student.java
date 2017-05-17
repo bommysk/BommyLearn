@@ -15,6 +15,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import javax.inject.Named;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
 import javax.el.ELContext;
@@ -45,6 +46,7 @@ public class Student implements Serializable {
     private String lastName;
     private String email;
     private String postalAddress;
+    private String classDistributionJS = calculateClassDistributionJS(new HashMap<String, List<Assignment>>());
     private Date createdDate = new Date();
     
     public DBConnect getDbConnect() {
@@ -133,6 +135,14 @@ public class Student implements Serializable {
     public void setCreatedDate(Date created_date) {
         TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
         this.createdDate = created_date;
+    }
+
+    public String getClassDistributionJS() {
+        return classDistributionJS;
+    }
+
+    public void setClassDistributionJS(String classDistributionJS) {
+        this.classDistributionJS = classDistributionJS;
     }
 
     public String createStudent() throws SQLException, ParseException {
@@ -392,5 +402,70 @@ public class Student implements Serializable {
         this.lastName = result.getString("last_name");
         
         return "userProfile";
+    }
+    
+    // Maps week to an assignment list, so statistics can be calculated on the
+    // assignment grade and graphed, "week 1" -> List<Assignment>, "week 2" -> List<Assignment>
+    public String calculateClassDistributionJS(HashMap<String, List<Assignment>> dateAssignmentMap) {
+        return "$(function() { Morris.Area({\n" +
+"        element: 'morris-area-chart',\n" +
+"        data: [{\n" +
+"            period: '2010 Q1',\n" +
+"            iphone: 2666,\n" +
+"            ipad: null,\n" +
+"            itouch: 2647\n" +
+"        }, {\n" +
+"            period: '2010 Q2',\n" +
+"            iphone: 2778,\n" +
+"            ipad: 2294,\n" +
+"            itouch: 2441\n" +
+"        }, {\n" +
+"            period: '2010 Q3',\n" +
+"            iphone: 4912,\n" +
+"            ipad: 1969,\n" +
+"            itouch: 2501\n" +
+"        }, {\n" +
+"            period: '2010 Q4',\n" +
+"            iphone: 3767,\n" +
+"            ipad: 3597,\n" +
+"            itouch: 5689\n" +
+"        }, {\n" +
+"            period: '2011 Q1',\n" +
+"            iphone: 6810,\n" +
+"            ipad: 1914,\n" +
+"            itouch: 2293\n" +
+"        }, {\n" +
+"            period: '2011 Q2',\n" +
+"            iphone: 5670,\n" +
+"            ipad: 4293,\n" +
+"            itouch: 1881\n" +
+"        }, {\n" +
+"            period: '2011 Q3',\n" +
+"            iphone: 4820,\n" +
+"            ipad: 3795,\n" +
+"            itouch: 1588\n" +
+"        }, {\n" +
+"            period: '2011 Q4',\n" +
+"            iphone: 15073,\n" +
+"            ipad: 5967,\n" +
+"            itouch: 5175\n" +
+"        }, {\n" +
+"            period: '2012 Q1',\n" +
+"            iphone: 10687,\n" +
+"            ipad: 4460,\n" +
+"            itouch: 2028\n" +
+"        }, {\n" +
+"            period: '2012 Q2',\n" +
+"            iphone: 8432,\n" +
+"            ipad: 5713,\n" +
+"            itouch: 1791\n" +
+"        }],\n" +
+"        xkey: 'period',\n" +
+"        ykeys: ['iphone', 'ipad', 'itouch'],\n" +
+"        labels: ['iPhone', 'iPad', 'iPod Touch'],\n" +
+"        pointSize: 2,\n" +
+"        hideHover: 'auto',\n" +
+"        resize: true\n" +
+"    }); });";
     }
 }
