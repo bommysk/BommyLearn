@@ -8,14 +8,10 @@
  *
  * @author shubham.kahal
  */
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.io.Writer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,6 +22,8 @@ import java.util.List;
 import java.util.Scanner;
 import javax.annotation.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.servlet.http.Part;
 
@@ -295,10 +293,22 @@ public class Assignment implements Serializable {
             
             System.out.println(fileContent);
             
-            File assignmentFile = new File( "../student/uploads/" + fileNameAttributes + ".txt" );
-            assignmentFile.createNewFile(); // if file already exists will do nothing
+            String relativePath = "student" + File.separator + "uploads" + File.separator;
             
-            PrintWriter out = new PrintWriter( "../student/uploads/" + fileNameAttributes + ".txt" );
+            ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext(); 
+
+            String webContentRoot = ec.getRealPath("/");
+            
+            System.out.println("File Name: " + webContentRoot + relativePath + fileNameAttributes + ".txt");
+            
+            File assignmentFile = new File( webContentRoot + relativePath + fileNameAttributes + ".txt" );
+            
+            // if file already exists will do nothing
+            if (!assignmentFile.createNewFile()) {
+                throw new IOException("File Not Created");
+            }
+                
+            PrintWriter out = new PrintWriter( webContentRoot + relativePath + fileNameAttributes + ".txt" );
             out.println( fileContent );
             
             out.close();
