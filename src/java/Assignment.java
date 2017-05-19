@@ -463,4 +463,29 @@ public class Assignment implements Serializable {
         
         return gradedAssignmentList;
     }
+    
+    public Integer getAssignmentCount() throws SQLException {
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement(
+                        "select count(*) as count from " +
+                        "student join class_schedule on student.id = class_schedule.student_id " +
+                        "join class on class.id = class_schedule.class_id join assignment on class.id = assignment.class_id " +
+                        "left join assignment_submit on assignment.id = assignment_submit.assignment_id " +
+                        "where student.login = ? and assignment_submit.id is null");
+        
+        //get customer data from database
+        preparedStatement.setString(1, Util.getStudentLogin());
+        
+        ResultSet result = preparedStatement.executeQuery();
+        
+        result.next();
+
+        return result.getInt("count");
+    }
 }

@@ -212,6 +212,11 @@
                                             </h:column> 
                                              
                                             <h:column>
+                                                <f:facet name="header"> Teacher </f:facet>
+                                                    #{sched.teacher.getFirstName()} #{sched.teacher.getLastName()} 
+                                            </h:column> 
+                                             
+                                            <h:column>
                                                 <f:facet name="header"> Day Schedule </f:facet>
                                                     #{sched.cl.daySchedule}
                                             </h:column>
