@@ -102,6 +102,8 @@ INSERT INTO class_schedule(class_id, student_id, teacher_id) VALUES(2, 1, 1);
 
 INSERT INTO class_schedule(class_id, student_id, teacher_id) VALUES(3, 11, 2);
 
+INSERT INTO class_schedule(class_id, student_id, teacher_id) VALUES(1, 11, 1);
+
 DROP TABLE IF EXISTS attend CASCADE;
 /*  attendance_outcome possible values are: “in progress”, “completed successfully”, “completed partially” and “has not completed class” */
 CREATE TABLE attend (
@@ -188,9 +190,7 @@ CREATE TABLE forum (
     teacher_comment_id int,
     student_comment_id int,
     assignment_id int,
-    class_id int NOT NULL,
     FOREIGN KEY(teacher_comment_id) REFERENCES teacher_comment ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(student_comment_id) REFERENCES student_comment ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY(assignment_id) REFERENCES assignment ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY(assignment_id) REFERENCES assignment ON DELETE CASCADE ON UPDATE CASCADE
 );

@@ -59,7 +59,7 @@ public class Schedule {
         this.teacher = teacher;
     }
     
-    public List<Schedule> getSchedule() throws SQLException {
+    public List<Schedule> getStudentSchedule() throws SQLException {
         
         Connection con = dbConnect.getConnection();
 
