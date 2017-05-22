@@ -9,24 +9,24 @@
     <h:head>
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="dist/css/styles.css" rel="stylesheet" type="text/css" />
-        
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        
+
         <script src="pace/pace.js"></script>
         <link href="pace/themes/pace-theme-center-circle.css" rel="stylesheet" />
     </h:head>
     <h:body>
         <templates:navigation />
-        
+
         <f:metadata>
             <f:viewAction action="#{login.studentLogout}" />
         </f:metadata>
-         
+
         <div class="container">
-          
+
             <h1 class="text-center">Student Login</h1>
-            
+
             <div class="col-md-6 col-md-offset-3">
                 <div class="panel panel-success">
 
@@ -36,29 +36,31 @@
                         <h:form class="form-signin">
                             <label for="username" class="sr-only">Username</label>
                             <h:inputText id="login" value="#{login.studentLogin}" required="true"
-                                                    binding="#{login.loginUI}"
-                                                    requiredMessage="Your must enter your login."
-                                                    class="form-control"
-                                                    a:placeholder="Login" />
+                                         binding="#{login.loginUI}"
+                                         requiredMessage="Your must enter your login."
+                                         class="form-control"
+                                         a:placeholder="Login" />
                             <h:message for="login" style="color:red;margin:8px;"/>
                             <label for="password" class="sr-only">Password</label>
                             <h:inputSecret value="#{login.studentPassword}" required ="true"
-                                                         requiredMessage="Your must enter password"
-                                                         validatorMessage="Login/Password incorrect"
-                                                         validator="#{login.validateStudent}"
-                                                         class="form-control"
-                                                         id="password"
-                                                         a:placeholder="Password" />
+                                           requiredMessage="Your must enter password"
+                                           validatorMessage="Login/Password incorrect"
+                                           validator="#{login.validateStudent}"
+                                           class="form-control"
+                                           id="password"
+                                           a:placeholder="Password" />
                             <h:message for="password" style="color:red;margin:8px;"/>
 
                             <h:commandButton class="btn btn-lg btn-primary btn-block" value="Sign in" action="#{login.studentGo}" />
-                            
+
                             <h:link value="Create Account" outcome="newStudent" class="text-primary" />
                         </h:form>
                     </div>
                 </div>
             </div>
         </div> <!-- /container -->
+        <br />
+        <h:link outcome="welcomePrimefaces" value="Primefaces welcome page" />
     </h:body>
 </html>
 

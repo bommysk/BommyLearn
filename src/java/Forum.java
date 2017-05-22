@@ -131,6 +131,9 @@ public class Forum {
                                     "</div>\n" +
                         "</div>\n" +
                     "</li></ul>" +
+                    "<p:commandLink value=\"Get Distance\"  oncomplete=\"PF('selectedRowValuesDlg').show()\"  process=\"@this\">        \n" +
+"                  <f:attribute name=\"clinic\" value=\"#{clinic}\"/>\n" +
+"            </p:commandLink>" +
                     "</div></div></div></div></div>";
             
         }

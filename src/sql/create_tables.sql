@@ -155,10 +155,10 @@ CREATE TABLE teacher_comment (
     id serial PRIMARY KEY,
     comment text NOT NULL,
     teacher_id int NOT NULL,
-    assignment_id int NOT NULL,
+    class_id int NOT NULL,
     student_comment_id int, /* if responding to student comment, this will not be null. */
     FOREIGN KEY(teacher_id) REFERENCES teacher ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY(assignment_id) REFERENCES assignment ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 DROP TABLE IF EXISTS student_comment CASCADE;
@@ -167,10 +167,10 @@ CREATE TABLE student_comment (
     id serial PRIMARY KEY,
     comment text NOT NULL,
     student_id int NOT NULL,
-    assignment_id int NOT NULL,
+    class_id int NOT NULL,
     teacher_comment_id int, /* if responding to teacher comment, this will not be null. */
     FOREIGN KEY(student_id) REFERENCES student ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY(assignment_id) REFERENCES assignment ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 ALTER TABLE teacher_comment 
@@ -189,8 +189,8 @@ CREATE TABLE forum (
     id serial PRIMARY KEY,
     teacher_comment_id int,
     student_comment_id int,
-    assignment_id int,
+    class_id int,
     FOREIGN KEY(teacher_comment_id) REFERENCES teacher_comment ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(student_comment_id) REFERENCES student_comment ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY(assignment_id) REFERENCES assignment ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE
 );
