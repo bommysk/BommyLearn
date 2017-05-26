@@ -6,7 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import javax.annotation.ManagedBean;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.SessionScoped;
@@ -15,6 +18,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import javax.inject.Named;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
 import javax.el.ELContext;
@@ -394,5 +398,137 @@ public class Teacher implements Serializable {
         this.lastName = result.getString("last_name");
         
         return "userProfile";
+    }
+    
+    public String getFirstDayOfWeek(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        calendar.setTime(date);
+        
+        while (calendar.get(Calendar.DAY_OF_WEEK) > calendar.getFirstDayOfWeek()) {
+            calendar.add(Calendar.DATE, -1); // Substract 1 day until first day of week.
+        }
+        
+        Date firstDayOfWeek = calendar.getTime();
+        
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        // Output "Wed Sep 26 14:23:28 EST 2012"
+
+        String formatted = format.format(firstDayOfWeek);
+        
+        System.out.println(formatted);
+        
+        return formatted;
+    }
+    
+    public HashMap<String, HashMap<String, Integer>> calculateClassDistribution() throws SQLException {
+        HashMap<String, HashMap<String, Integer>> classDistribution = new HashMap<>();
+        Connection con = dbConnect.getConnection();
+        String firstDayOfWeek;
+        HashMap<String, Integer> classGrade;
+        ArrayList<String> classList = new ArrayList<>();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+        
+        con.setAutoCommit(false);
+
+        PreparedStatement preparedStatement = con.prepareStatement("select class.name as class_name, due_date, sum(grade) as grade_sum "
+                + "from assignment_submit join assignment on assignment_submit.assignment_id = assignment.id join class on "
+                + "assignment.class_id = class.id where assignment_submit.student_id = (select id from student where login = ?) "
+                + "group by class.id, due_date order by due_date", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        
+        preparedStatement.setString(1, Util.getTeacherLogin());
+        
+        ResultSet result = preparedStatement.executeQuery();
+        
+        List<Schedule> studentSchedule = (new Schedule()).getStudentSchedule();
+        
+        for (Schedule sched : studentSchedule) {
+            classList.add(sched.cl.getName());
+        }
+        
+        Collections.sort(classList);
+        
+        while (result.next()) { 
+            firstDayOfWeek = getFirstDayOfWeek(result.getDate("due_date"));
+
+            classDistribution.put(firstDayOfWeek, new HashMap<String, Integer>());
+
+            System.out.println(firstDayOfWeek);
+
+            classGrade = classDistribution.get(firstDayOfWeek);
+
+            for (String cl : classList) {
+                classGrade.put(cl, 0);
+            }
+
+            classGrade.put(result.getString("class_name"), classGrade.get(result.getString("class_name")) + result.getInt("grade_sum"));
+            
+            while (result.next() && getFirstDayOfWeek(result.getDate("due_date")).equals(firstDayOfWeek)) {
+                classGrade.put(result.getString("class_name"), classGrade.get(result.getString("class_name")) + result.getInt("grade_sum"));
+            }
+            
+            result.previous();
+        }
+        
+        return classDistribution;
+    }
+    
+    // Maps week to an assignment list, so statistics can be calculated on the
+    // assignment grade and graphed, "week 1 date" -> HashMap<class, grade>, "week 2 date" -> HashMap<class, grade>
+    public String calculateClassDistributionJS(HashMap<String, HashMap<String, Integer>> dateAssignmentMap) throws SQLException {
+        String classDistributionJS = "$(function() { Morris.Area({\n" +
+            "element: 'morris-area-chart',\n" +
+            "data: [";
+        
+        HashMap<String, Integer> classGrade;
+        
+        for (String key : dateAssignmentMap.keySet()) {
+            classDistributionJS += 
+                    "{\n period:'" + key + "',\n";
+            
+            classGrade = dateAssignmentMap.get(key);
+            
+            for (String cl : classGrade.keySet()) {
+                classDistributionJS += "'" + cl + "': " + classGrade.get(cl) + ",\n";
+            }
+            
+            classDistributionJS = classDistributionJS.substring(0, classDistributionJS.length() - 2);
+            
+            classDistributionJS += "\n},";
+        }
+        
+        classDistributionJS = classDistributionJS.substring(0, classDistributionJS.length() - 1);
+        
+        ArrayList<String> classList = new ArrayList<>();
+        List<Schedule> studentSchedule = (new Schedule()).getStudentSchedule();
+        
+        for (Schedule sched : studentSchedule) {
+            classList.add(sched.cl.getName());
+        }
+        
+        Collections.sort(classList);
+        
+        String ykeys = "[";
+        
+        for (String cl : classList) {
+            ykeys += "'" + cl + "',";
+        }
+        
+        ykeys = ykeys.substring(0, ykeys.length() - 1);
+        ykeys += "]";
+        
+        classDistributionJS += "],\n" +
+            "xkey: 'period',\n" +
+            "ykeys: " + ykeys + ",\n" +
+            "labels: " + ykeys + ",\n" +
+            "pointSize: 2,\n" +
+            "hideHover: 'auto',\n" +
+            "resize: true\n" +
+        "}); });";
+         
+         return classDistributionJS;
     }
 }

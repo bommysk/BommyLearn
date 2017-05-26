@@ -59,6 +59,49 @@ public class Schedule {
         this.teacher = teacher;
     }
     
+    public List<Schedule> getTeacherSchedule() throws SQLException {
+        
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select distinct class.name as class_name, class.description as class_description, " +
+                                        "class.day_schedule as day_schedule, class.start_time as start_time, " +
+                                        "class.end_time as end_time from class_schedule join class " +
+                                        "on class_schedule.class_id = class.id join teacher on class_schedule.teacher_id = " +
+                                        "teacher.id where class_schedule.teacher_id = (select id from teacher where login = ?);");
+        
+        preparedStatement.setString(1, Util.getTeacherLogin());
+        
+        ResultSet result = preparedStatement.executeQuery();
+
+        List<Schedule> schedule = new ArrayList<>();
+
+        while (result.next()) {
+            Schedule sched = new Schedule();
+            Class cl = new Class();
+            
+            cl.setName(result.getString("class_name"));
+            cl.setDescription(result.getString("class_description"));
+            cl.setDaySchedule(result.getString("day_schedule"));
+            cl.setStartTime(result.getTime("start_time"));
+            cl.setEndTime(result.getTime("end_time"));
+                        
+            sched.setCl(cl);
+   
+            //store all data into a List
+            schedule.add(sched);
+        }
+        
+        result.close();
+        con.close();
+        
+        return schedule;
+    }
+    
     public List<Schedule> getStudentSchedule() throws SQLException {
         
         Connection con = dbConnect.getConnection();
@@ -68,7 +111,7 @@ public class Schedule {
         }
 
         PreparedStatement preparedStatement
-                = con.prepareStatement("select class.name as class_name, class.description as class_description, " +
+                = con.prepareStatement("select distinct class.name as class_name, class.description as class_description, " +
                                         "class.day_schedule as day_schedule, class.start_time as start_time, " +
                                         "class.end_time as end_time, teacher.first_name as teacher_first_name, " +
                                         "teacher.last_name as teacher_last_name from class_schedule join class " +

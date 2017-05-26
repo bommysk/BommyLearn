@@ -209,7 +209,11 @@ public class Assignment implements Serializable {
         PreparedStatement preparedStatement
                 = con.prepareStatement("select assignment.id as assignment_id, assignment_submit.id as assignment_submit_id, assignment_submit.student_id, assignment_submit.submit_date,"
                         + " assignment.due_date, assignment_submit.file_path from assignment_submit join assignment on"
-                        + " assignment_submit.assignment_id = assignment.id where graded = 0;");
+                        + " assignment_submit.assignment_id = assignment.id where (graded = 0) and assignment.teacher_id = (select id from teacher where login = ?);");
+        
+        preparedStatement.setString(1, Util.getTeacherLogin());
+        
+        System.out.println("Teacher Login: " + Util.getTeacherLogin());
         
         ResultSet result = preparedStatement.executeQuery();
 
@@ -253,7 +257,9 @@ public class Assignment implements Serializable {
         PreparedStatement preparedStatement
                 = con.prepareStatement("select assignment.id as assignment_id, assignment_submit.id as assignment_submit_id, assignment_submit.student_id, assignment_submit.submit_date,"
                         + " assignment.due_date, assignment_submit.grade from assignment_submit join assignment on"
-                        + " assignment_submit.assignment_id = assignment.id where graded = 1;");
+                        + " assignment_submit.assignment_id = assignment.id where (graded = 1) and assignment.teacher_id = (select id from teacher where login = ?);");
+        
+        preparedStatement.setString(1, Util.getTeacherLogin());
         
         ResultSet result = preparedStatement.executeQuery();
 

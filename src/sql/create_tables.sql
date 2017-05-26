@@ -102,7 +102,7 @@ INSERT INTO class_schedule(class_id, student_id, teacher_id) VALUES(2, 1, 1);
 
 INSERT INTO class_schedule(class_id, student_id, teacher_id) VALUES(3, 11, 2);
 
-INSERT INTO class_schedule(class_id, student_id, teacher_id) VALUES(1, 11, 1);
+INSERT INTO class_schedule(class_id, student_id, teacher_id) VALUES(1, 11, 2);
 
 DROP TABLE IF EXISTS attend CASCADE;
 /*  attendance_outcome possible values are: “in progress”, “completed successfully”, “completed partially” and “has not completed class” */
@@ -126,16 +126,18 @@ CREATE TABLE assignment (
     description text NOT NULL,
     due_date date NOT NULL,
     class_id int NOT NULL,
-    FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE
+    teacher_id int NOT NULL,
+    FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(teacher_id) REFERENCES teacher ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-INSERT INTO assignment(name, description, due_date, class_id) VALUES('Calculus Assgn 1', 'Find the derivative.', '04/5/2017', 1);
+INSERT INTO assignment(name, description, due_date, class_id, teacher_id) VALUES('Calculus Assgn 1', 'Find the derivative.', '04/5/2017', 1, 1);
 
-INSERT INTO assignment(name, description, due_date, class_id) VALUES('Medieval England', 'Read Ch 1-2.', '04/4/2017', 2);
+INSERT INTO assignment(name, description, due_date, class_id, teacher_id) VALUES('Medieval England', 'Read Ch 1-2.', '04/4/2017', 2, 1);
 
-INSERT INTO assignment(name, description, due_date, class_id) VALUES('Medieval Spain', 'Read Ch 1-3.', '05/25/2017', 2);
+INSERT INTO assignment(name, description, due_date, class_id, teacher_id) VALUES('Medieval Spain', 'Read Ch 1-3.', '05/25/2017', 2, 2);
 
-INSERT INTO assignment(name, description, due_date, class_id) VALUES('Intro Essay', 'Write an essay that describes you.', '04/5/2017', 3);
+INSERT INTO assignment(name, description, due_date, class_id, teacher_id) VALUES('Intro Essay', 'Write an essay that describes you.', '04/5/2017', 3, 2);
 
 DROP TABLE IF EXISTS assignment_submit CASCADE;
 

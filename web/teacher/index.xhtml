@@ -198,7 +198,7 @@
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="table-responsive">
-                                         <h:dataTable value="#{schedule.getSchedule()}" var="sched" border="1" style="width:100%"
+                                         <h:dataTable value="#{schedule.getTeacherSchedule()}" var="sched" border="1" style="width:100%"
                         styleClass="table table-striped table-bordered table-hover">
 
                                             <h:column>
@@ -209,11 +209,6 @@
                                             <h:column>
                                                 <f:facet name="header"> Description </f:facet>
                                                     #{sched.cl.description}
-                                            </h:column> 
-                                             
-                                            <h:column>
-                                                <f:facet name="header"> Teacher </f:facet>
-                                                    #{sched.teacher.getFirstName()} #{sched.teacher.getLastName()} 
                                             </h:column> 
                                              
                                             <h:column>
