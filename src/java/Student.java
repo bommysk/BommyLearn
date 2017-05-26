@@ -431,7 +431,7 @@ public class Student implements Serializable {
         
         con.setAutoCommit(false);
 
-        PreparedStatement preparedStatement = con.prepareStatement("select class.name as class_name, due_date, sum(grade) as grade_sum from assignment_submit join assignment on assignment_submit.assignment_id = assignment.id join class on assignment.class_id = class.id where assignment_submit.student_id = (select id from student where login = ?) group by class.id, due_date", ResultSet.TYPE_SCROLL_SENSITIVE, 
+        PreparedStatement preparedStatement = con.prepareStatement("select class.name as class_name, due_date, sum(grade) as grade_sum from assignment_submit join assignment on assignment_submit.assignment_id = assignment.id join class on assignment.class_id = class.id where assignment_submit.student_id = (select id from student where login = ?) group by class.id, due_date order by due_date", ResultSet.TYPE_SCROLL_SENSITIVE, 
                         ResultSet.CONCUR_UPDATABLE);
         preparedStatement.setString(1, Util.getStudentLogin());
         
