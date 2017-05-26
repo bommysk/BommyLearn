@@ -133,6 +133,8 @@ INSERT INTO assignment(name, description, due_date, class_id) VALUES('Calculus A
 
 INSERT INTO assignment(name, description, due_date, class_id) VALUES('Medieval England', 'Read Ch 1-2.', '04/4/2017', 2);
 
+INSERT INTO assignment(name, description, due_date, class_id) VALUES('Medieval Spain', 'Read Ch 1-3.', '05/25/2017', 2);
+
 INSERT INTO assignment(name, description, due_date, class_id) VALUES('Intro Essay', 'Write an essay that describes you.', '04/5/2017', 3);
 
 DROP TABLE IF EXISTS assignment_submit CASCADE;
