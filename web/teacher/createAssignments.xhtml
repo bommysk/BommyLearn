@@ -40,6 +40,10 @@
 </h:head>
 
 <h:body>
+    
+    <f:metadata>
+        <f:viewAction action="#{assignment.onload}" />
+    </f:metadata>
 
     <div id="wrapper">
         
@@ -65,10 +69,17 @@
                         <div class="panel-body">
 
                             <h:form>
+                                
+                                <div class="form-group">
+                                    <label>Class:</label>
+                                    <h:selectOneMenu value="#{assignment.cl.name}" class="form-control">
+                                        <f:selectItems value="#{schedule.getTeacherClasses()}" />
+                                    </h:selectOneMenu>
+                                </div>
 
                                 <div class="form-group">
                                     <label>Name:</label> 
-                                    <h:inputText value="#{assgn.name}" required="true"
+                                    <h:inputText value="#{assignment.name}" required="true"
                                                                 requiredMessage="Your must enter the assignment name."
                                                                 id="assignmentName"
                                                                 class="form-control"
@@ -78,7 +89,7 @@
 
                                 <div class="form-group">
                                     <label>Description:</label> 
-                                    <h:inputText value="#{assgn.description}" required="true"
+                                    <h:inputText value="#{assignment.description}" required="true"
                                                                 requiredMessage="Your must enter the assignment description."
                                                                 id="assignmentDescription"
                                                                 class="form-control"
@@ -86,27 +97,15 @@
                                     <h:message for="assignmentDescription" style="color:red;margin:8px;"/>
                                 </div>
 
-
-                                <div class="form-group">
-                                    <label>Amount:</label>
-                                    <h:inputText value="#{assgn.cl.name}" required="true"
-                                                                requiredMessage="Your must enter the class name."
-                                                                class="form-control"
-                                                                id="className"
-                                                                a:placeholder="Class Name" />
-                                    <h:message for="className" style="color:red;margin:8px;"/>
-                                </div>
-
-
                                 <div class="form-group">
                                     <label style="margin-right:3px">Due Date:</label> 
 
-                                    <h:inputText value="#{assgn.dueDate}"
+                                    <h:inputText value="#{assignment.dueDate}"
                                                  required="true"
                                                  requiredMessage="Start Date Required."
                                                  converterMessage="Illegal date (should be mm/dd/yyyy)"
                                                  id="dueDate"
-                                                 class="datepicker"
+                                                 class="datepicker form-control"
                                                  a:placeholder="Due Date">
                                         <f:convertDateTime pattern="MM/dd/yyyy"/>
                                     </h:inputText>

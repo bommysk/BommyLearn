@@ -24,6 +24,9 @@ import javax.inject.Named;
 public class Forum {
     private DBConnect dbConnect = new DBConnect();
     private String comment;
+    private Teacher teacher;
+    private Student student;
+    private Class cl;
 
     public DBConnect getDbConnect() {
         return dbConnect;
@@ -39,6 +42,30 @@ public class Forum {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public Teacher getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
+    }
+
+    public Student getStudent() {
+        return student;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
+    }
+
+    public Class getCl() {
+        return cl;
+    }
+
+    public void setCl(Class cl) {
+        this.cl = cl;
     }
     
     public String createTeacherForumHTML() throws SQLException {

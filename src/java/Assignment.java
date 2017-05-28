@@ -352,7 +352,7 @@ public class Assignment implements Serializable {
         preparedStatement.executeUpdate();
     }
     
-    public void createAssignment() throws SQLException {
+    public String createAssignment() throws SQLException {
         Connection con = dbConnect.getConnection();
 
         if (con == null) {
@@ -361,16 +361,24 @@ public class Assignment implements Serializable {
 
         PreparedStatement preparedStatement
                 = con.prepareStatement(
-                        "insert into assignment(name, description, due_date, class_id) " +
-                        "values(?, ?, ?, (select id from class where name = ?))");
+                        "insert into assignment(name, description, due_date, class_id, teacher_id) " +
+                        "values(?, ?, ?, (select id from class where name = ?), (select id from teacher where login = ?))");
         
         //get customer data from database
         preparedStatement.setString(1, this.name);
         preparedStatement.setString(2, this.description);
         preparedStatement.setDate(3, new java.sql.Date(this.dueDate.getTime()));
         preparedStatement.setString(4, this.cl.getName());
+        preparedStatement.setString(5, Util.getTeacherLogin());
         
         preparedStatement.executeUpdate();
+        
+        setCl(null);
+        setName(null);
+        setDescription(null);
+        setDueDate(null);
+        
+        return "index";
     }
     
     public String goGradeAssignment(Assignment assignment) {
@@ -493,5 +501,9 @@ public class Assignment implements Serializable {
         result.next();
 
         return result.getInt("count");
+    }
+    
+    public void onload() {
+        this.cl = new Class();
     }
 }

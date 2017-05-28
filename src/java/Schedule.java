@@ -102,6 +102,17 @@ public class Schedule {
         return schedule;
     }
     
+    public List<String> getTeacherClasses() throws SQLException {
+        List<Schedule> teacherSchedule = getTeacherSchedule();
+        List<String> classList = new ArrayList<>();
+        
+        for (Schedule sched : teacherSchedule) {
+            classList.add(sched.getCl().getName());
+        }
+        
+        return classList;
+    }
+    
     public List<Schedule> getStudentSchedule() throws SQLException {
         
         Connection con = dbConnect.getConnection();
