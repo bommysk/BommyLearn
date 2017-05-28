@@ -105,25 +105,15 @@
             <to-view-id>teacher/index.xhtml</to-view-id>
             <redirect />
         </navigation-case>
+        <navigation-case>
+            <from-outcome>individualClassReportCard</from-outcome>
+            <to-view-id>/student/individualClassReportCard.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>reportCard</from-outcome>
+            <to-view-id>/student/reportCard.xhtml</to-view-id>
+        </navigation-case>
     </navigation-rule> 
-    
-    <navigation-rule>
-        <from-view-id>
-            /newStudent.xhtml
-        </from-view-id>
-        <navigation-case>
-            <from-outcome>newStudent</from-outcome>
-            <to-view-id>/newStudent.xhtml</to-view-id>
-        </navigation-case>
-        <navigation-case>
-            <from-outcome>studentLogin</from-outcome>
-            <to-view-id>/index.xhtml</to-view-id>
-        </navigation-case>
-        <navigation-case>
-            <from-outcome>teacherLogin</from-outcome>
-            <to-view-id>/teacherLogin.xhtml</to-view-id>
-        </navigation-case>
-    </navigation-rule>
     
     <navigation-rule>
         <from-view-id>
@@ -149,6 +139,14 @@
             <from-outcome>gradeAssignments</from-outcome>
             <to-view-id>/teacher/gradeAssignments.xhtml</to-view-id>
         </navigation-case>
+        <navigation-case>
+            <from-outcome>individualClassReportCard</from-outcome>
+            <to-view-id>/student/individualClassReportCard.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>reportCard</from-outcome>
+            <to-view-id>/student/reportCard.xhtml</to-view-id>
+        </navigation-case>
     </navigation-rule>
     
     <navigation-rule>
@@ -172,8 +170,12 @@
             <to-view-id>/teacher/viewFeedback.xhtml</to-view-id>
         </navigation-case>
         <navigation-case>
-            <from-outcome>addClasses</from-outcome>
-            <to-view-id>/teacher/add-classes.xhtml</to-view-id>
+            <from-outcome>individualClassReportCard</from-outcome>
+            <to-view-id>/student/individualClassReportCard.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>reportCard</from-outcome>
+            <to-view-id>/student/reportCard.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>   
     
@@ -200,6 +202,14 @@
         <navigation-case>
             <from-outcome>gradeAssignments</from-outcome>
             <to-view-id>/teacher/gradeAssignments.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>individualClassReportCard</from-outcome>
+            <to-view-id>/student/individualClassReportCard.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>reportCard</from-outcome>
+            <to-view-id>/student/reportCard.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
     
@@ -314,8 +324,12 @@
             <to-view-id>/student/viewFeedback.xhtml</to-view-id>
         </navigation-case>
         <navigation-case>
-            <from-outcome>addClasses</from-outcome>
-            <to-view-id>/student/add-classes.xhtml</to-view-id>
+            <from-outcome>individualClassReportCard</from-outcome>
+            <to-view-id>/student/individualClassReportCard.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>reportCard</from-outcome>
+            <to-view-id>/student/reportCard.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule> 
     
@@ -340,8 +354,12 @@
             <to-view-id>/student/viewFeedback.xhtml</to-view-id>
         </navigation-case>
         <navigation-case>
-            <from-outcome>addClasses</from-outcome>
-            <to-view-id>/student/add-classes.xhtml</to-view-id>
+            <from-outcome>individualClassReportCard</from-outcome>
+            <to-view-id>/student/individualClassReportCard.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>reportCard</from-outcome>
+            <to-view-id>/student/reportCard.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>   
     
@@ -366,8 +384,12 @@
             <to-view-id>/student/viewFeedback.xhtml</to-view-id>
         </navigation-case>
         <navigation-case>
-            <from-outcome>addClasses</from-outcome>
-            <to-view-id>/student/add-classes.xhtml</to-view-id>
+            <from-outcome>individualClassReportCard</from-outcome>
+            <to-view-id>/student/individualClassReportCard.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>reportCard</from-outcome>
+            <to-view-id>/student/reportCard.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>   
     
@@ -395,6 +417,14 @@
             <from-outcome>viewGradedAssignment</from-outcome>
             <to-view-id>/student/viewGradedAssignment.xhtml</to-view-id>
         </navigation-case>
+        <navigation-case>
+            <from-outcome>individualClassReportCard</from-outcome>
+            <to-view-id>/student/individualClassReportCard.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>reportCard</from-outcome>
+            <to-view-id>/student/reportCard.xhtml</to-view-id>
+        </navigation-case>
     </navigation-rule>
     
     <navigation-rule>
@@ -416,6 +446,14 @@
         <navigation-case>
             <from-outcome>viewFeedback</from-outcome>
             <to-view-id>/student/viewFeedback.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>individualClassReportCard</from-outcome>
+            <to-view-id>/student/individualClassReportCard.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>reportCard</from-outcome>
+            <to-view-id>/student/reportCard.xhtml</to-view-id>
         </navigation-case>        
     </navigation-rule>
     
@@ -440,9 +478,74 @@
             <to-view-id>/student/viewFeedback.xhtml</to-view-id>
         </navigation-case>
         <navigation-case>
-            <from-outcome>addClasses</from-outcome>
-            <to-view-id>/student/add-classes.xhtml</to-view-id>
+            <from-outcome>individualClassReportCard</from-outcome>
+            <to-view-id>/student/individualClassReportCard.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>reportCard</from-outcome>
+            <to-view-id>/student/reportCard.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
-
+    
+    <navigation-rule>
+        <from-view-id>
+            /student/individualClassReportCard.xhtml
+        </from-view-id>
+        <navigation-case>
+            <from-outcome>logout</from-outcome>
+            <to-view-id>/index.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>userProfile</from-outcome>
+            <to-view-id>/student/userProfile.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>viewAssignments</from-outcome>
+            <to-view-id>/student/assignments.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>viewFeedback</from-outcome>
+            <to-view-id>/student/viewFeedback.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>individualClassReportCard</from-outcome>
+            <to-view-id>/student/individualClassReportCard.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>reportCard</from-outcome>
+            <to-view-id>/student/reportCard.xhtml</to-view-id>
+        </navigation-case>        
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>
+            /student/reportCard.xhtml
+        </from-view-id>
+        <navigation-case>
+            <from-outcome>logout</from-outcome>
+            <to-view-id>/index.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>userProfile</from-outcome>
+            <to-view-id>/student/userProfile.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>viewAssignments</from-outcome>
+            <to-view-id>/student/assignments.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>viewFeedback</from-outcome>
+            <to-view-id>/student/viewFeedback.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>individualClassReportCard</from-outcome>
+            <to-view-id>/student/individualClassReportCard.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>reportCard</from-outcome>
+            <to-view-id>/student/reportCard.xhtml</to-view-id>
+        </navigation-case>        
+    </navigation-rule>
+    
+    <application/>
 </faces-config>
