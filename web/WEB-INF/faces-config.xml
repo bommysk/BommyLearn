@@ -105,14 +105,6 @@
             <to-view-id>teacher/index.xhtml</to-view-id>
             <redirect />
         </navigation-case>
-        <navigation-case>
-            <from-outcome>individualClassReportCard</from-outcome>
-            <to-view-id>/student/individualClassReportCard.xhtml</to-view-id>
-        </navigation-case>
-        <navigation-case>
-            <from-outcome>reportCard</from-outcome>
-            <to-view-id>/student/reportCard.xhtml</to-view-id>
-        </navigation-case>
     </navigation-rule> 
     
     <navigation-rule>
@@ -141,11 +133,11 @@
         </navigation-case>
         <navigation-case>
             <from-outcome>individualClassReportCard</from-outcome>
-            <to-view-id>/student/individualClassReportCard.xhtml</to-view-id>
+            <to-view-id>/teacher/individualClassReportCard.xhtml</to-view-id>
         </navigation-case>
         <navigation-case>
             <from-outcome>reportCard</from-outcome>
-            <to-view-id>/student/reportCard.xhtml</to-view-id>
+            <to-view-id>/teacher/reportCard.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
     

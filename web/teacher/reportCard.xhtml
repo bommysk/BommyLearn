@@ -34,7 +34,7 @@
         <link href="../pace/themes/pace-theme-center-circle.css" rel="stylesheet" />
     </h:head>
     <h:body>
-        <templates:studentDashboardNavigation/>
+        <templates:teacherDashboardNavigation/>
         
         <div id="page-wrapper">
             <div class="row">
@@ -47,9 +47,8 @@
             <div class="row">
                 <div class="card card-inverse card-primary mb-3 text-center">
                     <div class="card-block">
-                      <blockquote class="card-blockquote">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-                        <footer>Someone famous in <cite title="Source Title">Source Title</cite></footer>
+                     <blockquote class="card-blockquote">
+                        <h:outputText value="#{assignment.getTeacherReportCardHTML()}" escape="false" />                                                
                       </blockquote>
                     </div>
                 </div>

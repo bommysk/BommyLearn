@@ -576,7 +576,47 @@ public class Assignment implements Serializable {
         return individualClassReportCardHTML;
     }
     
-    public String getIndividualReportCardHTML() throws SQLException {
+    public String getIndividualClassStudentReportCards(String className) throws SQLException {
+        String individualClassReportCardHTML = "<table class='table table-inverse table-striped'>"
+                + "<tr>"                
+                + "<th>Student</th>"
+                + "<th>Assignment</th>"
+                + "<th>Submit Date</th>"
+                + "<th>Due Date</th>"
+                + "<th>Grade</th>"
+                + "<th>Letter Grade</th>"
+                + "</tr>";
+        
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select student.first_name as student_first_name, student.last_name as student_last_name, assignment.name as assignment_name, assignment_submit.submit_date,"
+                        + " assignment.due_date, assignment_submit.grade from assignment_submit join assignment on"
+                        + " assignment_submit.assignment_id = assignment.id join class on assignment.class_id = class.id "
+                        + " join student on assignment_submit.student_id = student.id where graded = 1"
+                        + " and class.id = (select id from class where name = ?);");
+        
+        
+        preparedStatement.setString(1, className);
+        
+        ResultSet result = preparedStatement.executeQuery();
+        
+        while (result.next()) {
+            individualClassReportCardHTML += "<tr><td>" + result.getString("student_first_name") + " " + result.getString("student_last_name") + "</td><td>" + result.getString("assignment_name")
+                    + "</td><td>" + result.getString("submit_date") + "</td><td>" + result.getString("due_date") + "</td>"
+                    + "<td>" + result.getDouble("grade") + "</td><td>" + getLetterGrade(result.getDouble("grade")) + "</td></tr>";
+        }
+        
+        individualClassReportCardHTML += "</table>";
+        
+        return individualClassReportCardHTML;
+    }
+    
+    public String getIndividualStudentReportCardHTML() throws SQLException {
         Connection con = dbConnect.getConnection();
         String html = "";
 
@@ -594,7 +634,7 @@ public class Assignment implements Serializable {
         ResultSet result = preparedStatement.executeQuery();
         
         while (result.next()) {
-            html += "<div id=\"" + result.getString("class_name") + "\" class=\"row\" style=\"display:none\">\n" +
+            html += "<div id=\"" + result.getString("class_name").replaceAll("\\s","") + "\" class=\"row\" style=\"display:none\">\n" +
                     "<div class=\"col-lg-12\">\n" +
                     "<div class=\"panel panel-default\">\n" +
                         "<div class=\"panel-heading\">\n" +
@@ -603,6 +643,32 @@ public class Assignment implements Serializable {
 "                        <!-- /.panel-heading -->\n" +
 "                        <div class=\"panel-body\">\n" +
                             getIndividualClassStudentReportCard(result.getString("class_name")) +
+"                        </div>\n" +
+"                        <!-- /.panel-body -->\n" +
+"                    </div>\n" +
+"                    <!-- /.panel -->\n" +
+"                </div>\n" +
+"                <!-- /.col-lg-12 -->\n" +
+"            </div>";
+        }
+        
+        return html;
+    }
+    
+    public String getIndividualTeacherReportCardHTML() throws SQLException {
+        String html = "";
+        List<String> teacherClasses = (new Schedule()).getTeacherClasses();
+        
+        for (String className : teacherClasses) {
+            html += "<div id=\"" + className.replaceAll("\\s","") + "\" class=\"row\" style=\"display:none\">\n" +
+                    "<div class=\"col-lg-12\">\n" +
+                    "<div class=\"panel panel-default\">\n" +
+                        "<div class=\"panel-heading\">\n" +
+"                            <strong>" + className + "</strong>\n" +
+"                        </div>\n" +
+"                        <!-- /.panel-heading -->\n" +
+"                        <div class=\"panel-body\">\n" +
+                            getIndividualClassStudentReportCards(className) +
 "                        </div>\n" +
 "                        <!-- /.panel-body -->\n" +
 "                    </div>\n" +
@@ -636,6 +702,39 @@ public class Assignment implements Serializable {
                         + " (select id from student where login = ?) group by class.name;");
         
         preparedStatement.setString(1, Util.getStudentLogin());
+        
+        ResultSet result = preparedStatement.executeQuery();
+        
+        while (result.next()) {
+            reportCardHTML += "<tr><td>" + result.getString("class_name") + "</td><td>" + result.getDouble("avg_grade") + "</td><td>" + getLetterGrade(result.getDouble("avg_grade")) + "</td></tr>";
+        }
+        
+        reportCardHTML += "</table>";
+        
+        return reportCardHTML;
+    }
+    
+    public String getTeacherReportCardHTML() throws SQLException {
+        String reportCardHTML = "<table class='table table-inverse table-striped'>"
+                + "<tr>"
+                + "<th>Class</th>"
+                + "<th>Percentage (%)</th>"
+                + "<th>Letter Grade</th>"
+                + "</tr>";
+        
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select class.name as class_name, avg(assignment_submit.grade) avg_grade"
+                        + " from assignment_submit join assignment on assignment_submit.assignment_id = assignment.id"
+                        + " join class on assignment.class_id = class.id where graded = 1 and assignment.teacher_id ="
+                        + " (select id from teacher where login = ?) group by class.name;");
+        
+        preparedStatement.setString(1, Util.getTeacherLogin());
         
         ResultSet result = preparedStatement.executeQuery();
         

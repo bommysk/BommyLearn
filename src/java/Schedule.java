@@ -182,8 +182,8 @@ public class Schedule {
         ResultSet result = preparedStatement.executeQuery();
         
         while (result.next()) {
-            navTabSchedule += "<li id=\"" + result.getString("class_name") + "Tab\" class=\"nav-item\">\n" +
-                              "<a class=\"nav-link active\" data-toggle=\"tab\" href=\"#" + result.getString("class_name") + "\" " +
+            navTabSchedule += "<li id=\"" + result.getString("class_name").replaceAll("\\s","") + "Tab\" class=\"nav-item\">\n" +
+                              "<a class=\"nav-link active\" data-toggle=\"tab\" href=\"#" + result.getString("class_name").replaceAll("\\s","") + "\" " +
                               "role=\"tab\">" + result.getString("class_name") + "</a></li>";
         }
         
@@ -216,20 +216,69 @@ public class Schedule {
         return studentClasses;
     }
     
-    public String toggleScheduleTabsJS() throws SQLException {
+    public String getTeacherNavTabSchedule() throws SQLException {
+        String navTabSchedule = "<ul class='nav nav-pills nav-justified' role='tablist'>";
+        
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select distinct class.name as class_name from class_schedule join class "
+                                        + "on class_schedule.class_id = class.id where "
+                                        + "class_schedule.teacher_id = (select id from teacher where login = ?);");
+        
+        preparedStatement.setString(1, Util.getTeacherLogin());
+        
+        ResultSet result = preparedStatement.executeQuery();
+        
+        while (result.next()) {
+            navTabSchedule += "<li id=\"" + result.getString("class_name").replaceAll("\\s","") + "Tab\" class=\"nav-item\">\n" +
+                              "<a class=\"nav-link active\" data-toggle=\"tab\" href=\"#" + result.getString("class_name").replaceAll("\\s","") + "\" " +
+                              "role=\"tab\">" + result.getString("class_name") + "</a></li>";
+        }
+        
+        navTabSchedule += "</ul>";        
+        
+        return navTabSchedule;
+    }
+    
+    public String toggleStudentScheduleTabsJS() throws SQLException {
         String scheduleTabsJS = "";
         List<String> studentClasses = getStudentClasses();
         
         for (int idx = 0; idx < studentClasses.size(); idx++) {
-            scheduleTabsJS += "$('#" + studentClasses.get(idx) + "Tab a').click(function (e) {\n" +
+            scheduleTabsJS += "$('#" + studentClasses.get(idx).replaceAll("\\s","") + "Tab a').click(function (e) {\n" +
             "e.preventDefault();\n";
             for (int innerIdx = 0; innerIdx < studentClasses.size(); innerIdx++) {       
                 if (innerIdx != idx) {
-                    scheduleTabsJS += "$('#" + studentClasses.get(innerIdx) + "').hide();\n";
+                    scheduleTabsJS += "$('#" + studentClasses.get(innerIdx).replaceAll("\\s","") + "').hide();\n";
                 }
             }
             
-            scheduleTabsJS += "$('#" + studentClasses.get(idx) + "').show();\n" + "});";
+            scheduleTabsJS += "$('#" + studentClasses.get(idx).replaceAll("\\s","") + "').show();\n" + "});";
+        }
+        
+        
+        return scheduleTabsJS;
+    }
+    
+    public String toggleTeacherScheduleTabsJS() throws SQLException {
+        String scheduleTabsJS = "";
+        List<String> teacherClasses = getTeacherClasses();
+        
+        for (int idx = 0; idx < teacherClasses.size(); idx++) {
+            scheduleTabsJS += "$('#" + teacherClasses.get(idx).replaceAll("\\s","") + "Tab a').click(function (e) {\n" +
+            "e.preventDefault();\n";
+            for (int innerIdx = 0; innerIdx < teacherClasses.size(); innerIdx++) {       
+                if (innerIdx != idx) {
+                    scheduleTabsJS += "$('#" + teacherClasses.get(innerIdx).replaceAll("\\s","") + "').hide();\n";
+                }
+            }
+            
+            scheduleTabsJS += "$('#" + teacherClasses.get(idx).replaceAll("\\s","") + "').show();\n" + "});";
         }
         
         
