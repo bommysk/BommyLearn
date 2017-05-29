@@ -525,4 +525,27 @@ public class Student implements Serializable {
          
          return classDistributionJS;
     }
+    
+    public Integer getClassId(String className) throws SQLException {
+        Connection con = dbConnect.getConnection();
+        
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+        
+        con.setAutoCommit(false);
+
+        PreparedStatement preparedStatement = con.prepareStatement("select class_id from class_schedule join class on class_schedule.class_id = class.id where "
+                + "class_schedule.student_id = (select id from student where login = ?) and class.name = ?", ResultSet.TYPE_SCROLL_SENSITIVE, 
+                        ResultSet.CONCUR_UPDATABLE);
+        
+        preparedStatement.setString(1, Util.getStudentLogin());
+        preparedStatement.setString(2, className);
+        
+        ResultSet result = preparedStatement.executeQuery();
+        
+        result.next();
+        
+        return result.getInt("class_id");
+    }
 }

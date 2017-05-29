@@ -160,7 +160,7 @@ CREATE TABLE teacher_comment (
     comment text NOT NULL,
     teacher_id int NOT NULL,
     class_id int NOT NULL,
-    student_comment_id int, /* if responding to student comment, this will not be null. */
+    student_response_id int, /* if responding to student comment, this will not be null. */
     FOREIGN KEY(teacher_id) REFERENCES teacher ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -172,28 +172,34 @@ CREATE TABLE student_comment (
     comment text NOT NULL,
     student_id int NOT NULL,
     class_id int NOT NULL,
-    teacher_comment_id int, /* if responding to teacher comment, this will not be null. */
+    teacher_response_id int, /* if responding to teacher comment, this will not be null. */
+    student_response_id int, /* if responding to student comment, this will not be null. */
     FOREIGN KEY(student_id) REFERENCES student ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 ALTER TABLE teacher_comment 
-   ADD CONSTRAINT fk_student_comment
-   FOREIGN KEY (student_comment_id) 
-   REFERENCES student_comment(id);
+   ADD CONSTRAINT fk_student_response_id
+   FOREIGN KEY (student_response_id) 
+   REFERENCES student(id);
 
 ALTER TABLE student_comment 
-   ADD CONSTRAINT fk_teacher_comment
-   FOREIGN KEY (teacher_comment_id) 
-   REFERENCES teacher_comment(id);
+   ADD CONSTRAINT fk_teacher_response_id
+   FOREIGN KEY (teacher_response_id) 
+   REFERENCES teacher(id);
+
+ALTER TABLE student_comment 
+   ADD CONSTRAINT fk_student_response_id
+   FOREIGN KEY (student_response_id) 
+   REFERENCES student(id);
 
 DROP TABLE IF EXISTS forum CASCADE;
 
 CREATE TABLE forum (
     id serial PRIMARY KEY,
+    class_id int NOT NULL,
     teacher_comment_id int,
     student_comment_id int,
-    class_id int,
     FOREIGN KEY(teacher_comment_id) REFERENCES teacher_comment ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(student_comment_id) REFERENCES student_comment ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE
