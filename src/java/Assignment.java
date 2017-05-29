@@ -542,8 +542,8 @@ public class Assignment implements Serializable {
                 + "<tr>"
                 + "<th>Class Name</th>"
                 + "<th>Assignment</th>"
-                + "<th>Assignment Submit Date</th>"
-                + "<th>Assignment Due Date</th>"
+                + "<th>Submit Date</th>"
+                + "<th>Due Date</th>"
                 + "<th>Grade</th>"
                 + "<th>Letter Grade</th>"
                 + "</tr>";
