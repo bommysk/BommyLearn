@@ -434,18 +434,18 @@ public class Teacher implements Serializable {
         
         con.setAutoCommit(false);
 
-        PreparedStatement preparedStatement = con.prepareStatement("select class.name as class_name, due_date, sum(grade) as grade_sum "
+        PreparedStatement preparedStatement = con.prepareStatement("select class.name as class_name, due_date, avg(grade) as grade_avg "
                 + "from assignment_submit join assignment on assignment_submit.assignment_id = assignment.id join class on "
-                + "assignment.class_id = class.id where assignment_submit.student_id = (select id from student where login = ?) "
+                + "assignment.class_id = class.id where assignment.teacher_id = (select id from teacher where login = ?) "
                 + "group by class.id, due_date order by due_date", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
         
         preparedStatement.setString(1, Util.getTeacherLogin());
         
         ResultSet result = preparedStatement.executeQuery();
         
-        List<Schedule> studentSchedule = (new Schedule()).getStudentSchedule();
+        List<Schedule> teacherSchedule = (new Schedule()).getTeacherSchedule();
         
-        for (Schedule sched : studentSchedule) {
+        for (Schedule sched : teacherSchedule) {
             classList.add(sched.cl.getName());
         }
         
@@ -464,10 +464,10 @@ public class Teacher implements Serializable {
                 classGrade.put(cl, 0);
             }
 
-            classGrade.put(result.getString("class_name"), classGrade.get(result.getString("class_name")) + result.getInt("grade_sum"));
+            classGrade.put(result.getString("class_name"), classGrade.get(result.getString("class_name")) + result.getInt("grade_avg"));
             
             while (result.next() && getFirstDayOfWeek(result.getDate("due_date")).equals(firstDayOfWeek)) {
-                classGrade.put(result.getString("class_name"), classGrade.get(result.getString("class_name")) + result.getInt("grade_sum"));
+                classGrade.put(result.getString("class_name"), classGrade.get(result.getString("class_name")) + result.getInt("grade_avg"));
             }
             
             result.previous();
@@ -503,9 +503,9 @@ public class Teacher implements Serializable {
         classDistributionJS = classDistributionJS.substring(0, classDistributionJS.length() - 1);
         
         ArrayList<String> classList = new ArrayList<>();
-        List<Schedule> studentSchedule = (new Schedule()).getStudentSchedule();
+        List<Schedule> teacherSchedule = (new Schedule()).getTeacherSchedule();
         
-        for (Schedule sched : studentSchedule) {
+        for (Schedule sched : teacherSchedule) {
             classList.add(sched.cl.getName());
         }
         
