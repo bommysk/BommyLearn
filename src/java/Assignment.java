@@ -506,4 +506,145 @@ public class Assignment implements Serializable {
     public void onload() {
         this.cl = new Class();
     }
+    
+    public String getLetterGrade(Double percentage) {
+        if (percentage >= 93) {
+            return "A";
+        }
+        else if (percentage >= 90) {
+            return "A-";
+        }
+        else if (percentage >= 83) {
+            return "B";
+        }
+        else if (percentage >= 80) {
+            return "B-";
+        }
+        else if (percentage >= 73) {
+            return "C";
+        }
+        else if (percentage >= 70) {
+            return "C-";
+        }
+        else if (percentage >= 63) {
+            return "D";
+        }
+        else if (percentage >= 60) {
+            return "D-";
+        }
+        else {
+            return "F";
+        }
+    }
+    
+    public String getIndividualClassStudentReportCard(String className) throws SQLException {
+        String individualClassReportCardHTML = "<table class='table table-inverse table-striped'>"
+                + "<tr>"
+                + "<th>Class Name</th>"
+                + "<th>Assignment</th>"
+                + "<th>Assignment Submit Date</th>"
+                + "<th>Assignment Due Date</th>"
+                + "<th>Grade</th>"
+                + "<th>Letter Grade</th>"
+                + "</tr>";
+        
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select assignment.name as assignment_name, class.name as class_name, assignment_submit.submit_date,"
+                        + " assignment.due_date, assignment_submit.grade from assignment_submit join assignment on"
+                        + " assignment_submit.assignment_id = assignment.id join class on assignment.class_id = class.id where graded = 1 and assignment_submit.student_id ="
+                        + " (select id from student where login = ?) and class.id = (select id from class where name = ?);");
+        
+        preparedStatement.setString(1, Util.getStudentLogin());
+        preparedStatement.setString(2, className);
+        
+        ResultSet result = preparedStatement.executeQuery();
+        
+        while (result.next()) {
+            individualClassReportCardHTML += "<tr><td>" + result.getString("class_name") + "</td><td>" + result.getString("assignment_name")
+                    + "</td><td>" + result.getString("submit_date") + "</td><td>" + result.getString("due_date") + "</td>"
+                    + "<td>" + result.getDouble("grade") + "</td><td>" + getLetterGrade(result.getDouble("grade")) + "</td></tr>";
+        }
+        
+        individualClassReportCardHTML += "</table>";
+        
+        return individualClassReportCardHTML;
+    }
+    
+    public String getIndividualReportCardHTML() throws SQLException {
+        Connection con = dbConnect.getConnection();
+        String html = "";
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+        
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select distinct class.name as class_name from class_schedule join class "
+                                        + "on class_schedule.class_id = class.id where "
+                                        + "class_schedule.student_id = (select id from student where login = ?);");
+        
+        preparedStatement.setString(1, Util.getStudentLogin());
+        
+        ResultSet result = preparedStatement.executeQuery();
+        
+        while (result.next()) {
+            html += "<div id=\"" + result.getString("class_name") + "\" class=\"row\" style=\"display:none\">\n" +
+                    "<div class=\"col-lg-12\">\n" +
+                    "<div class=\"panel panel-default\">\n" +
+                        "<div class=\"panel-heading\">\n" +
+"                            <strong>" + result.getString("class_name") + "</strong>\n" +
+"                        </div>\n" +
+"                        <!-- /.panel-heading -->\n" +
+"                        <div class=\"panel-body\">\n" +
+                            getIndividualClassStudentReportCard(result.getString("class_name")) +
+"                        </div>\n" +
+"                        <!-- /.panel-body -->\n" +
+"                    </div>\n" +
+"                    <!-- /.panel -->\n" +
+"                </div>\n" +
+"                <!-- /.col-lg-12 -->\n" +
+"            </div>";
+        }
+        
+        return html;
+    }
+    
+    public String getStudentReportCardHTML() throws SQLException {
+        String reportCardHTML = "<table class='table table-inverse table-striped'>"
+                + "<tr>"
+                + "<th>Class</th>"
+                + "<th>Percentage (%)</th>"
+                + "<th>Letter Grade</th>"
+                + "</tr>";
+        
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select class.name as class_name, avg(assignment_submit.grade) avg_grade"
+                        + " from assignment_submit join assignment on assignment_submit.assignment_id = assignment.id"
+                        + " join class on assignment.class_id = class.id where graded = 1 and assignment_submit.student_id ="
+                        + " (select id from student where login = ?) group by class.name;");
+        
+        preparedStatement.setString(1, Util.getStudentLogin());
+        
+        ResultSet result = preparedStatement.executeQuery();
+        
+        while (result.next()) {
+            reportCardHTML += "<tr><td>" + result.getString("class_name") + "</td><td>" + result.getDouble("avg_grade") + "</td><td>" + getLetterGrade(result.getDouble("avg_grade")) + "</td></tr>";
+        }
+        
+        reportCardHTML += "</table>";
+        
+        return reportCardHTML;
+    }
 }

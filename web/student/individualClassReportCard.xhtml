@@ -42,18 +42,13 @@
                     <h1 class="page-header">Individual Class Report Card</h1>
                 </div>
                 <!-- /.col-lg-12 -->
+                <!-- Nav tabs -->
+                <h:outputText value="#{schedule.getStudentNavTabSchedule()}" escape="false"></h:outputText>
+                
+                <br />
             </div>
-            
-            <div class="row">
-                <div class="card card-inverse card-primary mb-3 text-center">
-                    <div class="card-block">
-                      <blockquote class="card-blockquote">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-                        <footer>Someone famous in <cite title="Source Title">Source Title</cite></footer>
-                      </blockquote>
-                    </div>
-                </div>
-            </div>
+            <h:outputText value="#{assignment.getIndividualReportCardHTML()}" escape="false"></h:outputText>
+            <!-- /.row -->    
         </div>
         
         <!-- jQuery -->
@@ -72,5 +67,11 @@
 
         <!-- Custom Theme JavaScript -->
         <script src="../dist/js/sb-admin-2.js"></script>
+        
+        <script> 
+            $(document).ready(function() {
+                <h:outputText value="#{schedule.toggleScheduleTabsJS()}" escape="false"></h:outputText>
+            });
+        </script>
     </h:body>
 </html>

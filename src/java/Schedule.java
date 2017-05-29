@@ -162,4 +162,77 @@ public class Schedule {
         
         return schedule;
     }
+    
+    public String getStudentNavTabSchedule() throws SQLException {
+        String navTabSchedule = "<ul class='nav nav-pills nav-justified' role='tablist'>";
+        
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select distinct class.name as class_name from class_schedule join class "
+                                        + "on class_schedule.class_id = class.id where "
+                                        + "class_schedule.student_id = (select id from student where login = ?);");
+        
+        preparedStatement.setString(1, Util.getStudentLogin());
+        
+        ResultSet result = preparedStatement.executeQuery();
+        
+        while (result.next()) {
+            navTabSchedule += "<li id=\"" + result.getString("class_name") + "Tab\" class=\"nav-item\">\n" +
+                              "<a class=\"nav-link active\" data-toggle=\"tab\" href=\"#" + result.getString("class_name") + "\" " +
+                              "role=\"tab\">" + result.getString("class_name") + "</a></li>";
+        }
+        
+        navTabSchedule += "</ul>";        
+        
+        return navTabSchedule;
+    }
+    
+    public List<String> getStudentClasses() throws SQLException {
+        Connection con = dbConnect.getConnection();
+        List<String> studentClasses = new ArrayList<String>();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select distinct class.name as class_name from class_schedule join class "
+                                        + "on class_schedule.class_id = class.id where "
+                                        + "class_schedule.student_id = (select id from student where login = ?);");
+        
+        preparedStatement.setString(1, Util.getStudentLogin());
+        
+        ResultSet result = preparedStatement.executeQuery();
+        
+        while (result.next()) {
+            studentClasses.add(result.getString("class_name"));
+        }
+        
+        return studentClasses;
+    }
+    
+    public String toggleScheduleTabsJS() throws SQLException {
+        String scheduleTabsJS = "";
+        List<String> studentClasses = getStudentClasses();
+        
+        for (int idx = 0; idx < studentClasses.size(); idx++) {
+            scheduleTabsJS += "$('#" + studentClasses.get(idx) + "Tab a').click(function (e) {\n" +
+            "e.preventDefault();\n";
+            for (int innerIdx = 0; innerIdx < studentClasses.size(); innerIdx++) {       
+                if (innerIdx != idx) {
+                    scheduleTabsJS += "$('#" + studentClasses.get(innerIdx) + "').hide();\n";
+                }
+            }
+            
+            scheduleTabsJS += "$('#" + studentClasses.get(idx) + "').show();\n" + "});";
+        }
+        
+        
+        return scheduleTabsJS;
+    }
 }

@@ -23,3 +23,7 @@ and open the template in the editor.
 }
 
 h1 { color: #7c795d; font-family: 'Trocchi', serif; font-size: 45px; font-weight: normal; line-height: 48px; margin-top:20px; padding-top:15px; padding-bottom:15px }
+
+.table td {
+   text-align: center;   
+}
