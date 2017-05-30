@@ -373,4 +373,50 @@ public class Forum {
         this.student.setStudentLogin("Select Student");
         setComment(null);
     }
+    
+    public Integer getTeacherCommentCount() throws SQLException {
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select ((select count(*) from teacher_comment where teacher_response_id = "
+                        + "(select id from teacher where login = ?)) + (select count(*) from student_comment where teacher_response_id = "
+                        + "(select id from teacher where login = ?))) as comment_count");
+
+        preparedStatement.setString(1, Util.getTeacherLogin());
+        
+        preparedStatement.setString(2, Util.getTeacherLogin());
+        
+        ResultSet resultSet = preparedStatement.executeQuery();
+        
+        resultSet.next();
+        
+        return resultSet.getInt("comment_count");
+    }
+    
+    public Integer getStudentCommentCount() throws SQLException {
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select ((select count(*) from teacher_comment where student_response_id = "
+                        + "(select id from student where login = ?)) + (select count(*) from student_comment where student_response_id = "
+                        + "(select id from student where login = ?))) as comment_count");
+
+        preparedStatement.setString(1, Util.getStudentLogin());
+        
+        preparedStatement.setString(2, Util.getStudentLogin());
+        
+        ResultSet resultSet = preparedStatement.executeQuery();
+        
+        resultSet.next();
+        
+        return resultSet.getInt("comment_count");
+    }
 }

@@ -78,7 +78,7 @@
                         <!-- /.panel-heading -->
                         <div class="panel-body">
                             <h:dataTable value="#{assignment.getSubmittedAssignmentList()}" var="assgn" border="1" style="width:100%"
-                        styleClass="table table-striped table-bordered table-hover" id="ungradedAssignmentsTable">
+                                         styleClass="table table-striped table-bordered table-hover" headerClass="table-header" id="ungradedAssignmentsTable">
                 
                                 <h:column>
                                     <f:facet name="header"> Assignment Id </f:facet>
@@ -126,7 +126,7 @@
                         <!-- /.panel-heading -->
                         <div class="panel-body">
                             <h:dataTable value="#{assignment.getGradedAssignmentList()}" var="assgn" border="1" style="width:100%"
-                        styleClass="table table-striped table-bordered table-hover" id="gradedAssignmentsTable">
+                        styleClass="table table-striped table-bordered table-hover" headerClass="table-header" id="gradedAssignmentsTable">
                 
                                 <h:column>
                                     <f:facet name="header"> Assignment Id </f:facet>

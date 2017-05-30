@@ -540,12 +540,12 @@ public class Assignment implements Serializable {
     public String getIndividualClassStudentReportCard(String className) throws SQLException {
         String individualClassReportCardHTML = "<table class='table table-inverse table-striped'>"
                 + "<tr>"
-                + "<th>Class Name</th>"
-                + "<th>Assignment</th>"
-                + "<th>Submit Date</th>"
-                + "<th>Due Date</th>"
-                + "<th>Grade</th>"
-                + "<th>Letter Grade</th>"
+                + "<th class='table-header'>Class Name</th>"
+                + "<th class='table-header'>Assignment</th>"
+                + "<th class='table-header'>Submit Date</th>"
+                + "<th class='table-header'>Due Date</th>"
+                + "<th class='table-header'>Grade</th>"
+                + "<th class='table-header'>Letter Grade</th>"
                 + "</tr>";
         
         Connection con = dbConnect.getConnection();
@@ -579,12 +579,12 @@ public class Assignment implements Serializable {
     public String getIndividualClassStudentReportCards(String className) throws SQLException {
         String individualClassReportCardHTML = "<table class='table table-inverse table-striped'>"
                 + "<tr>"                
-                + "<th>Student</th>"
-                + "<th>Assignment</th>"
-                + "<th>Submit Date</th>"
-                + "<th>Due Date</th>"
-                + "<th>Grade</th>"
-                + "<th>Letter Grade</th>"
+                + "<th class='table-header'>Student</th>"
+                + "<th class='table-header'>Assignment</th>"
+                + "<th class='table-header'>Submit Date</th>"
+                + "<th class='table-header'>Due Date</th>"
+                + "<th class='table-header'>Grade</th>"
+                + "<th class='table-header'>Letter Grade</th>"
                 + "</tr>";
         
         Connection con = dbConnect.getConnection();
@@ -684,9 +684,9 @@ public class Assignment implements Serializable {
     public String getStudentReportCardHTML() throws SQLException {
         String reportCardHTML = "<table class='table table-inverse table-striped'>"
                 + "<tr>"
-                + "<th>Class</th>"
-                + "<th>Percentage (%)</th>"
-                + "<th>Letter Grade</th>"
+                + "<th class='table-header'>Class</th>"
+                + "<th class='table-header'>Percentage (%)</th>"
+                + "<th class='table-header'>Letter Grade</th>"
                 + "</tr>";
         
         Connection con = dbConnect.getConnection();
@@ -717,9 +717,9 @@ public class Assignment implements Serializable {
     public String getTeacherReportCardHTML() throws SQLException {
         String reportCardHTML = "<table class='table table-inverse table-striped'>"
                 + "<tr>"
-                + "<th>Class</th>"
-                + "<th>Percentage (%)</th>"
-                + "<th>Letter Grade</th>"
+                + "<th class='table-header'>Class</th>"
+                + "<th class='table-header'>Percentage (%)</th>"
+                + "<th class='table-header'>Letter Grade</th>"
                 + "</tr>";
         
         Connection con = dbConnect.getConnection();
@@ -745,5 +745,25 @@ public class Assignment implements Serializable {
         reportCardHTML += "</table>";
         
         return reportCardHTML;
+    }
+    
+    public Integer getPastDeadlineCount() throws SQLException {
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select count(*) as past_deadline_count from assignment join class_schedule on assignment.class_id = class_schedule.class_id\n" +
+                                        "where student_id = (select id from student where login = ?) and due_date < now();");
+        
+        preparedStatement.setString(1, Util.getStudentLogin());
+        
+        ResultSet resultSet = preparedStatement.executeQuery();
+        
+        resultSet.next();
+        
+        return resultSet.getInt("past_deadline_count");
     }
 }
