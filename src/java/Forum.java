@@ -78,12 +78,12 @@ public class Forum {
         }
 
         PreparedStatement preparedStatement
-                = con.prepareStatement("(select teacher_comment.id as comment_id, teacher.login, teacher_comment.comment, teacher_comment.post_date\n" +
+                = con.prepareStatement("(select teacher_comment.teacher_response_id, teacher_comment.student_response_id, teacher.login, teacher_comment.comment, teacher_comment.post_date\n" +
                                         "from forum join teacher_comment on forum.teacher_comment_id = teacher_comment.id\n" +
                                         "join teacher on teacher_comment.teacher_id = teacher.id\n" +
                                         "where forum.class_id = ?)\n" +
                                         "UNION\n" +
-                                        "(select student_comment.id as comment_id, student.login, student_comment.comment, student_comment.post_date\n" +
+                                        "(select student_comment.teacher_response_id, student_comment.student_response_id, student.login, student_comment.comment, student_comment.post_date\n" +
                                         "from forum join student_comment on forum.student_comment_id = student_comment.id\n" +
                                         "join student on student_comment.student_id = student.id\n" +
                                         "where forum.class_id = ?)\n" +
@@ -177,13 +177,13 @@ public class Forum {
         }
 
         PreparedStatement preparedStatement
-                = con.prepareStatement("INSERT INTO teacher_comment(comment, teacher_id, class_id, student_response_id, post_date) "
-                        + "VALUES(?, ?, (select id from teacher where login = ?), "
-                        + "(select id from student where login = ?), now());", PreparedStatement.RETURN_GENERATED_KEYS);
+                = con.prepareStatement("INSERT INTO teacher_comment(comment, teacher_id, class_id, teacher_response_id, student_response_id, post_date) "
+                        + "VALUES(?, (select id from teacher where login = ?), ?, "
+                        + "null, (select id from student where login = ?), now());", PreparedStatement.RETURN_GENERATED_KEYS);             
         
         preparedStatement.setString(1, comment);
-        preparedStatement.setInt(2, this.teacher.getClassId(className));
-        preparedStatement.setString(3, Util.getTeacherLogin());
+        preparedStatement.setString(2, Util.getTeacherLogin());
+        preparedStatement.setInt(3, this.teacher.getClassId(className));
         preparedStatement.setString(4, studentLogin);
         
         preparedStatement.executeUpdate();
