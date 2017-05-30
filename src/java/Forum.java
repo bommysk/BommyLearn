@@ -71,23 +71,23 @@ public class Forum {
     public String createTeacherForumHTML() throws SQLException {
         String forumHTML = "";
         Connection con = dbConnect.getConnection();
-        int counter = 0;
+        int counter;
 
         if (con == null) {
             throw new SQLException("Can't get database connection");
         }
 
         PreparedStatement preparedStatement
-                = con.prepareStatement("(select teacher.login, teacher_comment.comment, teacher_comment.post_date\n" +
-"from forum join teacher_comment on forum.teacher_comment_id = teacher_comment.id\n" +
-"join teacher on teacher_comment.teacher_id = teacher.id\n" +
-"where forum.class_id = ?)\n" +
-"UNION\n" +
-"(select student.login, student_comment.comment, student_comment.post_date\n" +
-"from forum join student_comment on forum.student_comment_id = student_comment.id\n" +
-"join student on student_comment.student_id = student.id\n" +
-"where forum.class_id = ?)\n" +
-"order by post_date;");
+                = con.prepareStatement("(select teacher_comment.id as comment_id, teacher.login, teacher_comment.comment, teacher_comment.post_date\n" +
+                                        "from forum join teacher_comment on forum.teacher_comment_id = teacher_comment.id\n" +
+                                        "join teacher on teacher_comment.teacher_id = teacher.id\n" +
+                                        "where forum.class_id = ?)\n" +
+                                        "UNION\n" +
+                                        "(select student_comment.id as comment_id, student.login, student_comment.comment, student_comment.post_date\n" +
+                                        "from forum join student_comment on forum.student_comment_id = student_comment.id\n" +
+                                        "join student on student_comment.student_id = student.id\n" +
+                                        "where forum.class_id = ?)\n" +
+                                        "order by post_date;");
         
         ResultSet resultSet;
         
@@ -136,6 +136,13 @@ public class Forum {
 
                 forumHTML += "<p><small class=\"text-muted\"><i class=\"fa fa-clock-o\"></i> " + resultSet.getString("login") + " " + resultSet.getTimestamp("post_date") + "</small></p>\n";
                 
+                if (resultSet.getInt("teacher_response_id") != 0) {
+                    forumHTML += "<p><small class=\"text-muted\"><i class=\"fa fa-at\"></i> " + (new Teacher()).getTeacherLoginFromId(resultSet.getInt("teacher_response_id")) + "</small></p>\n";
+                }
+                
+                if (resultSet.getInt("student_response_id") != 0) {
+                    forumHTML += "<p><small class=\"text-muted\"><i class=\"fa fa-at\"></i> " + (new Student()).getStudentLoginFromId(resultSet.getInt("student_response_id")) + "</small></p>\n";
+                }
                 
                 forumHTML += "</div><div class=\"timeline-body\">\n";
                 
@@ -207,7 +214,7 @@ public class Forum {
         this.student.setStudentLogin("Select Student");
         setComment(null);
     }
-    
+   
     public String createStudentForumHTML() throws SQLException {
         String forumHTML = "";
         Connection con = dbConnect.getConnection();
@@ -218,17 +225,17 @@ public class Forum {
         }
 
         PreparedStatement preparedStatement
-                = con.prepareStatement("(select teacher.login, teacher_comment.comment, teacher_comment.post_date\n" +
-"from forum join teacher_comment on forum.teacher_comment_id = teacher_comment.id\n" +
-"join teacher on teacher_comment.teacher_id = teacher.id\n" +
-"where forum.class_id = ?)\n" +
-"UNION\n" +
-"(select student.login, student_comment.comment, student_comment.post_date\n" +
-"from forum join student_comment on forum.student_comment_id = student_comment.id\n" +
-"join student on student_comment.student_id = student.id\n" +
-"where forum.class_id = ?)\n" +
-"order by post_date;");
-        
+                = con.prepareStatement("(select teacher_comment.teacher_response_id, teacher_comment.student_response_id, teacher.login, teacher_comment.comment, teacher_comment.post_date\n" +
+                                        "from forum join teacher_comment on forum.teacher_comment_id = teacher_comment.id\n" +
+                                        "join teacher on teacher_comment.teacher_id = teacher.id\n" +
+                                        "where forum.class_id = ?)\n" +
+                                        "UNION\n" +
+                                        "(select student_comment.teacher_response_id, student_comment.student_response_id, student.login, student_comment.comment, student_comment.post_date\n" +
+                                        "from forum join student_comment on forum.student_comment_id = student_comment.id\n" +
+                                        "join student on student_comment.student_id = student.id\n" +
+                                        "where forum.class_id = ?)\n" +
+                                        "order by post_date;");
+
         ResultSet resultSet;
         
         List<Schedule> studentSchedule = (new Schedule()).getStudentSchedule();
@@ -271,10 +278,17 @@ public class Forum {
                         "<div class=\"timeline-panel\">\n" +
                             "<div class=\"timeline-heading\">\n";
                 
-               
                 forumHTML += "<p>" + resultSet.getString("comment") + "</p>\n";
 
                 forumHTML += "<p><small class=\"text-muted\"><i class=\"fa fa-clock-o\"></i> " + resultSet.getString("login") + " " + resultSet.getTimestamp("post_date") + "</small></p>\n";
+                
+                if (resultSet.getInt("teacher_response_id") != 0) {
+                    forumHTML += "<p><small class=\"text-muted\"><i class=\"fa fa-at\"></i> " + (new Teacher()).getTeacherLoginFromId(resultSet.getInt("teacher_response_id")) + "</small></p>\n";
+                }
+                
+                if (resultSet.getInt("student_response_id") != 0) {
+                    forumHTML += "<p><small class=\"text-muted\"><i class=\"fa fa-at\"></i> " + (new Student()).getStudentLoginFromId(resultSet.getInt("student_response_id")) + "</small></p>\n";
+                }
                 
                 forumHTML += "</div><div class=\"timeline-body\">\n";
                 

@@ -314,6 +314,29 @@ public class Student implements Serializable {
         return result.getInt("id");
     }
     
+    public String getStudentLoginFromId(Integer id) throws SQLException {
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+        
+        con.setAutoCommit(false);
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement(
+                        "select login from student where id = ?");
+
+        preparedStatement.setInt(1, id);
+        
+        //get customer data from database
+        ResultSet result = preparedStatement.executeQuery();
+        
+        result.next();
+        
+        return result.getString("login");
+    }
+    
     public void clear() {
         setStudentLogin(null);
         setStudentPassword(null);

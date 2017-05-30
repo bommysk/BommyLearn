@@ -160,6 +160,7 @@ CREATE TABLE teacher_comment (
     comment text NOT NULL,
     teacher_id int NOT NULL,
     class_id int NOT NULL,
+    teacher_response_id int, /* if responding to teacher comment, this will not be null. */
     student_response_id int, /* if responding to student comment, this will not be null. */
     post_date timestamp  NOT NULL,
     FOREIGN KEY(teacher_id) REFERENCES teacher ON DELETE CASCADE ON UPDATE CASCADE,
