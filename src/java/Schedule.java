@@ -192,9 +192,34 @@ public class Schedule {
         return navTabSchedule;
     }
     
+    public List<String> getTeacherStudents() throws SQLException {
+        Connection con = dbConnect.getConnection();
+        List<String> teacherStudents = new ArrayList<>();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select distinct student.login as student_login from class_schedule join student "
+                                        + "on class_schedule.student_id = student.id where "
+                                        + "class_schedule.teacher_id = (select id from teacher where login = ?);");
+        
+        preparedStatement.setString(1, Util.getTeacherLogin());
+        
+        ResultSet result = preparedStatement.executeQuery();
+        
+        while (result.next()) {
+            teacherStudents.add(result.getString("student_login"));
+        }
+        
+        return teacherStudents;
+    }
+    
+    
     public List<String> getStudentClasses() throws SQLException {
         Connection con = dbConnect.getConnection();
-        List<String> studentClasses = new ArrayList<String>();
+        List<String> studentClasses = new ArrayList<>();
 
         if (con == null) {
             throw new SQLException("Can't get database connection");
@@ -214,6 +239,58 @@ public class Schedule {
         }
         
         return studentClasses;
+    }
+    
+    public List<String> getStudentTeachers() throws SQLException {
+        Connection con = dbConnect.getConnection();
+        List<String> studentTeachers = new ArrayList<>();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select distinct teacher.login as teacher_login from class_schedule join teacher "
+                                        + "on class_schedule.teacher_id = teacher.id where "
+                                        + "class_schedule.student_id = (select id from student where login = ?);");
+        
+        preparedStatement.setString(1, Util.getStudentLogin());
+        
+        ResultSet result = preparedStatement.executeQuery();
+        
+        while (result.next()) {
+            studentTeachers.add(result.getString("teacher_login"));
+        }
+        
+        return studentTeachers;
+    }
+    
+    public List<String> getStudentClassMates() throws SQLException {
+        Connection con = dbConnect.getConnection();
+        List<String> studentClassMates = new ArrayList<>();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select student.login as student_login from class_schedule join student on "
+                                        + "class_schedule.student_id = student.id where class_schedule.class_id in "
+                                        + "(select distinct class.id from class_schedule join class "
+                                        + "on class_schedule.class_id = class.id where "
+                                        + "class_schedule.student_id = (select id from student where login = ?)) and "
+                                        + "student.id != (select id from student where login = ?);");
+        
+        preparedStatement.setString(1, Util.getStudentLogin());
+        preparedStatement.setString(2, Util.getStudentLogin());
+        
+        ResultSet result = preparedStatement.executeQuery();
+        
+        while (result.next()) {
+            studentClassMates.add(result.getString("student_login"));
+        }
+        
+        return studentClassMates;
     }
     
     public String getTeacherNavTabSchedule() throws SQLException {

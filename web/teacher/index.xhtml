@@ -243,16 +243,14 @@
                                 <h:form>
                                     <h:selectOneMenu value="#{forum.cl.name}" class="col-lg-6">
                                         <f:selectItem itemValue="Select Class" itemLabel="Select Class"/>
-                                        <f:selectItem itemValue="Calculus" itemLabel="Calculus" />
-                                        <f:selectItem itemValue="Medieval History" itemLabel="Medieval History" />
-                                        <f:selectItem itemValue="Buena Vista" itemLabel="Coffee3 - Buena Vista" />
+                                        <f:selectItems value="#{schedule.getTeacherClasses()}" var="c"
+                                        itemLabel="#{c}" itemValue="#{c}" />
                                     </h:selectOneMenu>
 
                                     <h:selectOneMenu value="#{forum.student.studentLogin}" class="col-lg-6">
                                         <f:selectItem itemValue="Select Student" itemLabel="Select Student"/>
-                                        <f:selectItem itemValue="Cream Latte" itemLabel="Coffee3 - Cream Latte" />
-                                        <f:selectItem itemValue="Extreme Mocha" itemLabel="Coffee3 - Extreme Mocha" />
-                                        <f:selectItem itemValue="Buena Vista" itemLabel="Coffee3 - Buena Vista" />
+                                        <f:selectItems value="#{schedule.getTeacherStudents()}" var="s"
+                                        itemLabel="#{s}" itemValue="#{s}" />
                                     </h:selectOneMenu>
                                     
                                     <h:inputTextarea id="btn-input" class="form-control input-sm" value="#{forum.comment}" style="width:100%; padding:3px; float:none; margin:3px auto; border:1px solid black;" />
