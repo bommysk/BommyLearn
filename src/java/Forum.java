@@ -69,64 +69,33 @@ public class Forum {
     }
     
     public String createTeacherForumHTML() throws SQLException {
-        
-        Connection con = dbConnect.getConnection();
-
-        if (con == null) {
-            throw new SQLException("Can't get database connection");
-        }
-
-        PreparedStatement preparedStatement
-                = con.prepareStatement("select class.name as class_name, class.description as class_description, " +
-                                        "class.day_schedule as day_schedule, class.start_time as start_time, " +
-                                        "class.end_time as end_time, teacher.first_name as teacher_first_name, " +
-                                        "teacher.last_name as teacher_last_name from class_schedule join class " +
-                                        "on class_schedule.class_id = class.id join teacher on class_schedule.teacher_id = " +
-                                        "teacher.id where class_schedule.student_id = (select id from student where login = ?);");
-        
-        preparedStatement.setString(1, Util.getStudentLogin());
-        
-        String tempForumHTML = 
-        "<div class=\"panel-group\" id=\"accordion\">\n" +
-          "<div class=\"panel panel-primary\">\n" +
-          "<div class=\"panel-heading\">\n" +
-            "<h4 class=\"panel-title\">\n" +
-                "<a data-toggle=\"collapse\" data-parent=\"#accordion\" href=\"#collapse1\">Collapsible Group 1</a>\n" +
-            "</h4>\n" +
-           "</div>\n" +
-           "<div id=\"collapse1\" class=\"panel-collapse collapse in\">\n" +
-           "<div class=\"panel-body\">Lorem ipsum dolor sit amet, consectetur adipisicing elit,\n" +
-            "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,\n" +
-            "quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>\n" +
-          "</div>\n" +
-        "</div>";
-    
-        tempForumHTML += "</div>";
-        
-        return tempForumHTML;
-    }
-    
-    public String createStudentForumHTML() throws SQLException {
         String forumHTML = "";
         Connection con = dbConnect.getConnection();
+        int counter = 0;
 
         if (con == null) {
             throw new SQLException("Can't get database connection");
         }
 
         PreparedStatement preparedStatement
-                = con.prepareStatement("select teacher.login as teacher_login, student.login as student_login, student_comment.comment \n" +
-                                        "from forum left join teacher_comment on forum.teacher_comment_id = teacher_comment.id \n" +
-                                        "join student_comment on forum.student_comment_id = student_comment.id left join teacher on \n" +
-                                        "teacher_comment.teacher_id = teacher.id join student on student_comment.student_id = student.id\n" +
-                                        "where student_comment.class_id = ?;");
+                = con.prepareStatement("(select teacher.login, teacher_comment.comment, teacher_comment.post_date\n" +
+"from forum join teacher_comment on forum.teacher_comment_id = teacher_comment.id\n" +
+"join teacher on teacher_comment.teacher_id = teacher.id\n" +
+"where forum.class_id = ?)\n" +
+"UNION\n" +
+"(select student.login, student_comment.comment, student_comment.post_date\n" +
+"from forum join student_comment on forum.student_comment_id = student_comment.id\n" +
+"join student on student_comment.student_id = student.id\n" +
+"where forum.class_id = ?)\n" +
+"order by post_date;");
         
         ResultSet resultSet;
         
-        List<Schedule> studentSchedule = (new Schedule()).getStudentSchedule();
+        List<Schedule> teacherSchedule = (new Schedule()).getTeacherSchedule();
         
-        for (Schedule sched : studentSchedule) {
-            preparedStatement.setInt(1, this.student.getClassId(sched.getCl().getName()));
+        for (Schedule sched : teacherSchedule) {
+            preparedStatement.setInt(1, this.teacher.getClassId(sched.getCl().getName()));
+            preparedStatement.setInt(2, this.teacher.getClassId(sched.getCl().getName()));
             resultSet = preparedStatement.executeQuery();
             
             forumHTML += 
@@ -147,19 +116,173 @@ public class Forum {
                 "<ul class=\"timeline\" id=\"" + sched.getCl().getName() + "_forum\"" + ">";
                     // loop and generate comments for each li
                 
+            counter = 0;
+                
             while (resultSet.next()) {
-                forumHTML += "<li>\n" +
-                        "<div class=\"timeline-badge\"><i class=\"fa fa-check\"></i>\n" +
+                if (counter % 2 != 0) {
+                    forumHTML += "<li class=\"timeline-inverted\">\n";
+                }
+                else {
+                    forumHTML += "<li>\n";
+                }
+                
+                forumHTML += "<div class=\"timeline-badge\"><i class=\"fa fa-check\"></i>\n" +
                         "</div>\n" +
                         "<div class=\"timeline-panel\">\n" +
-                            "<div class=\"timeline-heading\">\n" +
-                                "<p><small class=\"text-muted\"><i class=\"fa fa-clock-o\"></i> 11 hours ago via Twitter</small></p>\n" +
-                            "</div>\n" +
-                            "<div class=\"timeline-body\">\n" +
-                                "<p>" + resultSet.getString("comment") + "</p>\n" +
-                            "</div>\n" +
+                            "<div class=\"timeline-heading\">\n";
+                
+                
+                forumHTML += "<p>" + resultSet.getString("comment") + "</p>\n";
+
+                forumHTML += "<p><small class=\"text-muted\"><i class=\"fa fa-clock-o\"></i> " + resultSet.getString("login") + " " + resultSet.getTimestamp("post_date") + "</small></p>\n";
+                
+                
+                forumHTML += "</div><div class=\"timeline-body\">\n";
+                
+                forumHTML += "</div>\n" +
                         "</div>\n" +
                     "</li>";
+                
+                counter++;
+            }
+            
+                    
+            forumHTML += "</ul>" +
+                         "</div></div></div></div></div>";
+            
+        }
+        
+        return forumHTML;
+    }
+    
+    public void addTeacherComment() throws SQLException, Exception {
+        Connection con = dbConnect.getConnection();
+        String className = cl.getName();
+        String studentLogin = student.getStudentLogin();
+        int teacherCommentId;
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+        
+        if (studentLogin.equals("Select Student")) {
+            studentLogin = null;
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("INSERT INTO teacher_comment(comment, teacher_id, class_id, student_response_id, post_date) "
+                        + "VALUES(?, ?, (select id from teacher where login = ?), "
+                        + "(select id from student where login = ?), now());", PreparedStatement.RETURN_GENERATED_KEYS);
+        
+        preparedStatement.setString(1, comment);
+        preparedStatement.setInt(2, this.teacher.getClassId(className));
+        preparedStatement.setString(3, Util.getTeacherLogin());
+        preparedStatement.setString(4, studentLogin);
+        
+        preparedStatement.executeUpdate();
+        
+        ResultSet resultSet = preparedStatement.getGeneratedKeys();
+        if ( resultSet.next() ) {
+            // Retrieve the auto generated key(s).
+            teacherCommentId = resultSet.getInt(1);
+        }
+        else {
+            throw new Exception("Student comment id not set.");
+        }
+        
+        preparedStatement
+                = con.prepareStatement("INSERT INTO forum(class_id, teacher_comment_id, student_comment_id) "
+                        + "VALUES(?, ?, null);");
+        
+        preparedStatement.setInt(1, this.teacher.getClassId(className));
+        preparedStatement.setInt(2, teacherCommentId);
+        
+        preparedStatement.executeUpdate();
+        
+        clearTeacherComment();
+    }
+    
+    public void clearTeacherComment() {        
+        this.cl.setName("Select Class");
+        this.student.setStudentLogin("Select Student");
+        setComment(null);
+    }
+    
+    public String createStudentForumHTML() throws SQLException {
+        String forumHTML = "";
+        Connection con = dbConnect.getConnection();
+        int counter;
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("(select teacher.login, teacher_comment.comment, teacher_comment.post_date\n" +
+"from forum join teacher_comment on forum.teacher_comment_id = teacher_comment.id\n" +
+"join teacher on teacher_comment.teacher_id = teacher.id\n" +
+"where forum.class_id = ?)\n" +
+"UNION\n" +
+"(select student.login, student_comment.comment, student_comment.post_date\n" +
+"from forum join student_comment on forum.student_comment_id = student_comment.id\n" +
+"join student on student_comment.student_id = student.id\n" +
+"where forum.class_id = ?)\n" +
+"order by post_date;");
+        
+        ResultSet resultSet;
+        
+        List<Schedule> studentSchedule = (new Schedule()).getStudentSchedule();
+        
+        for (Schedule sched : studentSchedule) {
+            preparedStatement.setInt(1, this.student.getClassId(sched.getCl().getName()));
+            preparedStatement.setInt(2, this.student.getClassId(sched.getCl().getName()));
+            resultSet = preparedStatement.executeQuery();
+            
+            forumHTML += 
+              "<div class=\"panel-group\" id=\"accordion\">\n" +
+              "<div class=\"panel panel-primary\">\n" +
+              "<div class=\"panel-heading\">\n" +
+                "<h4 class=\"panel-title\">\n" +
+                    "<a data-toggle=\"collapse\" data-parent=\"#accordion\" href=\"#collapse1\">" + sched.getCl().getName() + "</a>\n" +
+                "</h4>\n" +
+                "</div>\n" +
+                "<div id=\"collapse1\" class=\"panel-collapse collapse in\">\n" +
+                "<div class=\"panel panel-default\">\n" +
+                "<div class=\"panel-heading\">\n" +
+                    "<i class=\"fa fa-clock-o fa-fw\"></i> Forum\n" +
+                "</div>\n" +
+                "<!-- /.panel-heading -->\n" +
+                "<div class=\"panel-body\">\n" +
+                "<ul class=\"timeline\" id=\"" + sched.getCl().getName() + "_forum\"" + ">";
+                    // loop and generate comments for each li
+            
+            counter = 0;
+                
+            while (resultSet.next()) {
+                if (counter % 2 != 0) {
+                    forumHTML += "<li class=\"timeline-inverted\">\n";
+                }
+                else {
+                    forumHTML += "<li>\n";
+                }
+                
+                forumHTML += "<div class=\"timeline-badge\"><i class=\"fa fa-check\"></i>\n" +
+                        "</div>\n" +
+                        "<div class=\"timeline-panel\">\n" +
+                            "<div class=\"timeline-heading\">\n";
+                
+               
+                forumHTML += "<p>" + resultSet.getString("comment") + "</p>\n";
+
+                forumHTML += "<p><small class=\"text-muted\"><i class=\"fa fa-clock-o\"></i> " + resultSet.getString("login") + " " + resultSet.getTimestamp("post_date") + "</small></p>\n";
+                
+                forumHTML += "</div><div class=\"timeline-body\">\n";
+                
+                forumHTML += "</div>\n" +
+                        "</div>\n" +
+                    "</li>";
+                
+                counter++;
             }
             
                     
@@ -191,9 +314,9 @@ public class Forum {
         }
 
         PreparedStatement preparedStatement
-                = con.prepareStatement("INSERT INTO student_comment(comment, class_id, student_id, teacher_response_id, student_response_id) "
+                = con.prepareStatement("INSERT INTO student_comment(comment, class_id, student_id, teacher_response_id, student_response_id, post_date) "
                         + "VALUES(?, ?, (select id from student where login = ?), "
-                        + "(select id from teacher where login = ?), (select id from student where login = ?));", PreparedStatement.RETURN_GENERATED_KEYS);
+                        + "(select id from teacher where login = ?), (select id from student where login = ?), now());", PreparedStatement.RETURN_GENERATED_KEYS);
         
         preparedStatement.setString(1, comment);
         preparedStatement.setInt(2, this.student.getClassId(className));
@@ -221,7 +344,7 @@ public class Forum {
         
         preparedStatement.executeUpdate();
         
-        clear();
+        clearStudentComment();
     }
     
     public void onload() {
@@ -230,7 +353,7 @@ public class Forum {
         this.student = new Student();
     }
     
-    public void clear() {        
+    public void clearStudentComment() {        
         this.cl.setName("Select Class");
         this.teacher.setTeacherLogin("Select Teacher");
         this.student.setStudentLogin("Select Student");

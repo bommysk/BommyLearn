@@ -161,6 +161,7 @@ CREATE TABLE teacher_comment (
     teacher_id int NOT NULL,
     class_id int NOT NULL,
     student_response_id int, /* if responding to student comment, this will not be null. */
+    post_date timestamp  NOT NULL,
     FOREIGN KEY(teacher_id) REFERENCES teacher ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -174,6 +175,7 @@ CREATE TABLE student_comment (
     class_id int NOT NULL,
     teacher_response_id int, /* if responding to teacher comment, this will not be null. */
     student_response_id int, /* if responding to student comment, this will not be null. */
+    post_date timestamp  NOT NULL,
     FOREIGN KEY(student_id) REFERENCES student ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE
 );
