@@ -98,6 +98,10 @@ public class Class implements Serializable {
         this.endDate = endDate;
     }
     
+    public void createClass() {
+        
+    }
+    
     public List<Class> getClassList() throws SQLException {
         Connection con = dbConnect.getConnection();
 

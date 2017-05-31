@@ -292,7 +292,7 @@ public class Assignment implements Serializable {
         return submittedAssignmentList;
     }
 
-    public void save(String fileNameAttributes) {
+    public String save(String fileNameAttributes) {
         try {
             fileContent = new Scanner(file.getInputStream())
                 .useDelimiter("\\A").next();
@@ -319,10 +319,14 @@ public class Assignment implements Serializable {
             
             out.close();
             
+            return webContentRoot + relativePath + fileNameAttributes + ".txt";
+            
         } catch (IOException e) {
           // Error handling
             e.printStackTrace();
-        }
+        }    
+        
+        return null;
     }
     
     // This function will consume the id of an assignment that is submitted
@@ -330,7 +334,7 @@ public class Assignment implements Serializable {
     public void submit(Integer id) throws SQLException {
         String fileNameAttributes = id + "_" + Util.getStudentLogin();
         
-        save(fileNameAttributes);
+        String fileName = save(fileNameAttributes);
         
         // add to assignment_submit table
         Connection con = dbConnect.getConnection();
@@ -346,7 +350,7 @@ public class Assignment implements Serializable {
         
         preparedStatement.setInt(1, id);
         preparedStatement.setInt(2, (new Student()).getStudentId(Util.getStudentLogin()));
-        preparedStatement.setString(3, "../student/uploads/" + fileNameAttributes + ".txt");
+        preparedStatement.setString(3, fileName);
         preparedStatement.setDate(4, new java.sql.Date(this.submitDate.getTime()));
         
         preparedStatement.executeUpdate();
