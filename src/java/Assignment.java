@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.Scanner;
 import javax.annotation.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
+import javax.servlet.ServletContext;
 import javax.servlet.http.Part;
 
 @Named(value = "assignment")
@@ -292,34 +292,39 @@ public class Assignment implements Serializable {
         return submittedAssignmentList;
     }
 
-    public String save(String fileNameAttributes) {
+    public String save(String fileNameAttributes) {                
         try {
             fileContent = new Scanner(file.getInputStream())
                 .useDelimiter("\\A").next();
             
             System.out.println(fileContent);
             
-            String relativePath = "student" + File.separator + "uploads" + File.separator;
+            String urlPath = "http://localhost:8080/BommyLearn/faces/uploads/";                       
             
-            ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext(); 
-
-            String webContentRoot = ec.getRealPath("/");
+            System.out.println("FILE PATH: " + urlPath + fileNameAttributes + ".txt" );
             
-            System.out.println("File Name: " + webContentRoot + relativePath + fileNameAttributes + ".txt");
+            ServletContext ctx = (ServletContext) FacesContext.getCurrentInstance()
+            .getExternalContext().getContext();
             
-            File assignmentFile = new File( webContentRoot + relativePath + fileNameAttributes + ".txt" );
+            // String realPath = ctx.getRealPath("/");
+            
+            String realPath = "/Users/shubhamkahal/NetBeansProjects/BommyLearn/web/";
+            
+            System.out.println("REAL PATH: " + realPath);
+            
+            File assignmentFile = new File( realPath + "/uploads/" + fileNameAttributes + ".txt" );
             
             // if file already exists will do nothing
             if (!assignmentFile.createNewFile()) {
                 throw new IOException("File Not Created");
             }
                 
-            PrintWriter out = new PrintWriter( webContentRoot + relativePath + fileNameAttributes + ".txt" );
+            PrintWriter out = new PrintWriter( realPath + "/uploads/" + fileNameAttributes + ".txt" );
             out.println( fileContent );
             
             out.close();
             
-            return webContentRoot + relativePath + fileNameAttributes + ".txt";
+            return urlPath + fileNameAttributes + ".txt";
             
         } catch (IOException e) {
           // Error handling
