@@ -24,20 +24,16 @@
     <script src="../pace/pace.js"></script>
     <link href="../pace/themes/pace-theme-center-circle.css" rel="stylesheet" />
     
-    <link href="../dist/css/jquery.timepicker.css" rel="stylesheet" />
-        
 </h:head>
 
 <h:body>
         <!-- Navigation -->
         <templates:adminDashboardNavigation />
 
-        <div class="container">
-            <h1 class="text-center">Add Class</h1>
+        <div class="container">                        
             <!-- /.row -->
-        <div class="container col-md-6 col-md-offset-3">
-                
-            <h1 class="text-center">New Class</h1>
+        <div class="col-md-6 col-md-offset-3"> 
+            <h1 class="text-center" style="margin-top:15%">New Class</h1>
 
             <div class="panel panel-success">
                 
@@ -50,8 +46,6 @@
                         <div class="form-group">
                             <label>Name:</label> <h:inputText value="#{cl.name}" required="true"
                                                         requiredMessage="Your must enter the class name."
-                                                        validatorMessage="This class already exists, please pick another one."
-                                                        validator="#{cl.validateClass}"
                                                         id="class"
                                                         class="form-control"
                                                         a:placeholder="Class" />
@@ -59,7 +53,7 @@
                         </div>                        
                         
                         <div class="form-group">
-                            <label>Password:</label><h:inputSecret value="#{cl.description}" required="true"
+                            <label>Description:</label><h:inputText value="#{cl.description}" required="true"
                                                         requiredMessage="Your must enter the class description."
                                                         class="form-control"
                                                         id="description"
@@ -68,7 +62,8 @@
                         </div>
                                                 
                         <div class="form-group">
-                            <label>Day Schedule:</label><h:selectOneMenu id="daySchedule" value="#{cl.daySchedule}" class="form-control">                                        
+                            <label>Day Schedule:</label>
+                            <h:selectOneMenu id="daySchedule" value="#{cl.daySchedule}" class="form-control">                                        
                                 <f:selectItem itemValue="MWF" itemLabel="MWF"/>
                                 <f:selectItem itemValue="MW" itemLabel="MW"/>
                                 <f:selectItem itemValue="TR" itemLabel="TR"/>
@@ -77,21 +72,35 @@
                         </div>
 
                         <div class="form-group">
-                            <label>End Time:</label><h:inputText value="#{cl.startTime}" required="true"
-                                               requiredMessage="Your must enter the start time."
-                                               id="startTime"
-                                               class="form-control"
-                                               a:placeholder="Start Time" />
-                            <h:message for="startTime" style="color:red;margin:8px;"/>
+                            <label>Start Time:</label>
+                            <h:selectOneMenu id="startTime" value="#{cl.startTime}" class="form-control">
+                                <f:selectItem itemValue="Start Time" itemLabel="Start Time"/> 
+                                <f:selectItem itemValue="07:10 AM" itemLabel="07:10 AM"/>
+                                <f:selectItem itemValue="08:10 AM" itemLabel="08:10 AM"/>
+                                <f:selectItem itemValue="09:10 AM" itemLabel="09:10 AM"/>
+                                <f:selectItem itemValue="10:10 AM" itemLabel="10:10 AM"/>
+                                <f:selectItem itemValue="11:10 AM" itemLabel="11:10 AM"/>
+                                <f:selectItem itemValue="12:10 PM" itemLabel="12:10 PM"/>
+                                <f:selectItem itemValue="01:10 PM" itemLabel="01:10 PM"/>
+                                <f:selectItem itemValue="02:10 PM" itemLabel="02:10 PM"/>
+                                <f:selectItem itemValue="03:10 PM" itemLabel="03:10 PM"/>
+                                <f:selectItem itemValue="04:10 PM" itemLabel="04:10 PM"/>
+                                <f:selectItem itemValue="05:10 PM" itemLabel="05:10 PM"/>
+                                <f:selectItem itemValue="06:10 PM" itemLabel="06:10 PM"/>
+                                <f:selectItem itemValue="07:10 PM" itemLabel="07:10 PM"/>
+                                <f:selectItem itemValue="08:10 PM" itemLabel="08:10 PM"/>
+                                <f:selectItem itemValue="09:10 PM" itemLabel="09:10 PM"/>
+                                <f:ajax render="endTime"/>
+                            </h:selectOneMenu>
                         </div>
                         
                         <div class="form-group">
-                            <label>End Time:</label> <h:inputText value="#{cl.endTime}" required="true"
-                                               requiredMessage="Your must enter the end time."
-                                               id="endTime"
-                                               class="form-control"
-                                               a:placeholder="End Time" />
-                            <h:message for="endTime" style="color:red;margin:8px;"/>
+                            <label>End Time:</label>
+                            <h:selectOneMenu id="endTime" value="#{cl.endTime}" class="form-control">                                        
+                                <f:selectItem itemValue="End Time" itemLabel="End Time"/>  
+                                <f:selectItems value="#{cl.getEndTimes()}" var="et"
+                                        itemLabel="#{et}" itemValue="#{et}" />
+                            </h:selectOneMenu>
                         </div>                      
 
                         <h:commandButton value="Create" class="btn btn-primary" action="#{cl.createClass}" />
@@ -103,28 +112,17 @@
         </div>
     </div>
     <!-- jQuery -->
-    <script src="../vendor/jquery/jquery.min.js"></script>
-    
-    <!-- jQuery Timepicker -->
-    <script src="../vendor/jquery/jquery.timepicker.min.js"></script>
+    <script src="../vendor/jquery/jquery.min.js"></script>        
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>             
 
     <!-- Metis Menu Plugin JavaScript -->
     <script src="../vendor/metisMenu/metisMenu.min.js"></script>
 
     <!-- Custom Theme JavaScript -->
-    <script src="../dist/js/sb-admin-2.js"></script>
-    
-    <script>
-        $(document).ready(function() {
-            $('#startTime').timepicker({ 'timeFormat': 'H:i:s' });
-            $('#endTime').timepicker({ 'timeFormat': 'H:i:s' });
-        });
-    </script>
+    <script src="../dist/js/sb-admin-2.js"></script>    
 
 </h:body>
 
 </html>
-

@@ -12,6 +12,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.ManagedBean;
@@ -26,6 +28,7 @@ public class Schedule {
     Class cl = new Class();
     Student student = new Student();
     Teacher teacher = new Teacher();
+    public String[] classList;
 
     public DBConnect getDbConnect() {
         return dbConnect;
@@ -58,6 +61,14 @@ public class Schedule {
     public void setTeacher(Teacher teacher) {
         this.teacher = teacher;
     }
+
+    public String[] getClassList() {
+        return classList;
+    }
+
+    public void setClassList(String[] classList) {
+        this.classList = classList;
+    }
     
     public List<Schedule> getTeacherSchedule() throws SQLException {
         
@@ -87,8 +98,8 @@ public class Schedule {
             cl.setName(result.getString("class_name"));
             cl.setDescription(result.getString("class_description"));
             cl.setDaySchedule(result.getString("day_schedule"));
-            cl.setStartTime(result.getTime("start_time"));
-            cl.setEndTime(result.getTime("end_time"));
+            cl.setStartTime(result.getString("start_time"));
+            cl.setEndTime(result.getString("end_time"));
                         
             sched.setCl(cl);
    
@@ -143,8 +154,8 @@ public class Schedule {
             cl.setName(result.getString("class_name"));
             cl.setDescription(result.getString("class_description"));
             cl.setDaySchedule(result.getString("day_schedule"));
-            cl.setStartTime(result.getTime("start_time"));
-            cl.setEndTime(result.getTime("end_time"));
+            cl.setStartTime(result.getString("start_time"));
+            cl.setEndTime(result.getString("end_time"));
             
             teacher.setFirstName(result.getString("teacher_first_name"));
             teacher.setFirstName(result.getString("teacher_last_name"));
@@ -283,5 +294,36 @@ public class Schedule {
         
         
         return scheduleTabsJS;
+    }
+    
+    public String addToSchedule() throws SQLException {                
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+        
+        con.setAutoCommit(false);        
+
+        PreparedStatement preparedStatement = con.prepareStatement("insert into class_schedule(class_id, student_id, teacher_id) values(?, (select id from student where login = ?), (select id from teacher where login = ?));");
+      
+        for (String classId : this.classList) {
+            System.out.println("CLASS ID: " + classId);
+            preparedStatement.setInt(1, Integer.parseInt(classId));
+            preparedStatement.setString(2, this.student.getStudentLogin());
+            preparedStatement.setString(3, this.teacher.getTeacherLogin());
+            preparedStatement.executeUpdate();
+        }
+        
+        con.commit();
+        con.close();
+        
+        clear();
+        
+        return "createSchedule";
+    }
+    
+    public void clear() {
+        this.cl.setName(null);
     }
 }

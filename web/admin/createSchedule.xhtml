@@ -1,12 +1,93 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <title>Facelet Title</title>
-    </head>
-    <body>
-        <templates:adminDashboardNavigation />
-        Hello from Facelets
-    </body>
-</html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:templates="http://xmlns.jcp.org/jsf/composite/ezcomp">
+<h:head>
 
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+
+    <title>Create Schedule</title>
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script src="../pace/pace.js"></script>
+    <link href="../pace/themes/pace-theme-center-circle.css" rel="stylesheet" />        
+    
+</h:head>
+
+<h:body>
+    
+        <!-- Navigation -->
+        <templates:adminDashboardNavigation />
+
+        <div class="container">                        
+            <!-- /.row -->
+        <div class="col-md-6 col-md-offset-3"> 
+            <h1 class="text-center" style="margin-top:15%">Create Schedule</h1>
+
+            <div class="panel panel-success">
+                
+                <div class="panel-heading"></div>
+
+                <div class="panel-body">
+
+                    <h:form>
+                        
+                        <div class="form-group">
+                            <label>Class:</label>
+                            <h:selectManyListbox  id="class" value="#{schedule.classList}" class="form-control">                                        
+                                <f:selectItems value="#{cl.getClassList()}" var="c"
+                                               itemLabel="#{cl.makeLabel(c.name, c.daySchedule, c.startTime, c.endTime)}" itemValue="#{c.id}" />
+                            </h:selectManyListbox >
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Student:</label>
+                            <h:selectOneMenu id="student" value="#{schedule.student.studentLogin}" class="form-control">                                        
+                                <f:selectItems value="#{student.getAllLogins()}" var="s"
+                                        itemLabel="#{s}" itemValue="#{s}" />
+                            </h:selectOneMenu>
+                        </div>     
+                        
+                        <div class="form-group">
+                            <label>Teacher:</label>
+                            <h:selectOneMenu id="teacher" value="#{schedule.teacher.teacherLogin}" class="form-control">                                        
+                                <f:selectItems value="#{teacher.getAllLogins()}" var="t"
+                                        itemLabel="#{t}" itemValue="#{t}" />
+                            </h:selectOneMenu>
+                        </div> 
+
+                        <h:commandButton value="Register" class="btn btn-primary" action="#{schedule.addToSchedule}" />
+    
+                    </h:form>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- jQuery -->
+    <script src="../vendor/jquery/jquery.min.js"></script>        
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="../vendor/metisMenu/metisMenu.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="../dist/js/sb-admin-2.js"></script>
+
+</h:body>
+
+</html>

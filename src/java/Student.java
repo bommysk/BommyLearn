@@ -150,7 +150,7 @@ public class Student implements Serializable {
 
         Statement statement = con.createStatement();
 
-        PreparedStatement preparedStatement = con.prepareStatement("insert into customer(login, password, first_name, last_name, email, postal_address, credit_card_number, expiration_date, cvv_code, created_date) values(?,?,?,?,?,?,?,?,?,?)");
+        PreparedStatement preparedStatement = con.prepareStatement("insert into student(login, password, first_name, last_name, email, postal_address, created_date) values(?,?,?,?,?,?,?)");
         preparedStatement.setString(1, studentLogin);
         preparedStatement.setString(2, studentPassword);
         preparedStatement.setString(3, firstName);
@@ -162,12 +162,11 @@ public class Student implements Serializable {
         
         statement.close();
         con.commit();
-        con.close();
-        Util.validateStudentSession(studentLogin);
+        con.close();      
         
-        System.out.println(Util.getStudentLogin());
+        clear();
         
-        return "studentDashboard";
+        return "addStudent";
     }
     
     public String deleteStudent() throws SQLException, ParseException {
@@ -340,6 +339,10 @@ public class Student implements Serializable {
     public void clear() {
         setStudentLogin(null);
         setStudentPassword(null);
+        setFirstName(null);
+        setLastName(null);
+        setEmail(null);
+        setPostalAddress(null);        
     }
     
     public String changePassword() throws SQLException {
@@ -570,5 +573,28 @@ public class Student implements Serializable {
         result.next();
         
         return result.getInt("class_id");
+    }
+    
+    public List<String> getAllLogins() throws SQLException {
+        List<String> logins = new ArrayList<>();
+        
+        Connection con = dbConnect.getConnection();
+        
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+        
+        con.setAutoCommit(false);
+
+        PreparedStatement preparedStatement = con.prepareStatement("select login from student", ResultSet.TYPE_SCROLL_SENSITIVE, 
+                        ResultSet.CONCUR_UPDATABLE);        
+        
+        ResultSet result = preparedStatement.executeQuery();
+        
+        while (result.next()) {
+            logins.add(result.getString("login"));
+        }
+        
+        return logins;
     }
 }

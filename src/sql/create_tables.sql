@@ -69,20 +69,18 @@ CREATE TABLE class (
     name varchar(40) NOT NULL UNIQUE,
     description text NOT NULL,
     day_schedule varchar(10),
-    start_time time NOT NULL,
-    end_time time NOT NULL,
-    start_date date NOT NULL,
-    end_date date NOT NULL
+    start_time text NOT NULL,
+    end_time text NOT NULL
 );
 
-INSERT INTO class(name, description, day_schedule, start_time, end_time, start_date, end_date)
-VALUES('Calculus', 'Calculus', 'MTWR', '04:10 PM', '05:10 PM', '03/31/2017', '06/15/2017');
+INSERT INTO class(name, description, day_schedule, start_time, end_time)
+VALUES('Calculus', 'Calculus', 'MTWR', '04:10 PM', '05:10 PM');
 
-INSERT INTO class(name, description, day_schedule, start_time, end_time, start_date, end_date)
-VALUES('Medieval History', 'Study of European history from 800-1300.', 'MW', '03:10 PM', '05:10 PM', '03/31/2017', '06/15/2017');
+INSERT INTO class(name, description, day_schedule, start_time, end_time)
+VALUES('Medieval History', 'Study of European history from 800-1300.', 'MW', '03:10 PM', '05:10 PM');
 
-INSERT INTO class(name, description, day_schedule, start_time, end_time, start_date, end_date)
-VALUES('English', 'English', 'TR', '01:10 PM', '03:10 PM', '03/31/2017', '06/15/2017');
+INSERT INTO class(name, description, day_schedule, start_time, end_time)
+VALUES('English', 'English', 'TR', '01:10 PM', '03:10 PM');
 
 DROP TABLE IF EXISTS teaches CASCADE;
 
