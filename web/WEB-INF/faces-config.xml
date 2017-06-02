@@ -266,6 +266,74 @@
     
     <navigation-rule>
         <from-view-id>
+            /teacher/individualClassReportCard.xhtml
+        </from-view-id>
+        <navigation-case>
+            <from-outcome>index</from-outcome>
+            <to-view-id>/teacher/index.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>logout</from-outcome>
+            <to-view-id>/teacherLogin.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>userProfile</from-outcome>
+            <to-view-id>/teacher/userProfile.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>createAssignments</from-outcome>
+            <to-view-id>/teacher/createAssignments.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>gradeAssignments</from-outcome>
+            <to-view-id>/teacher/gradeAssignments.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>individualClassReportCard</from-outcome>
+            <to-view-id>/teacher/individualClassReportCard.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>reportCard</from-outcome>
+            <to-view-id>/teacher/reportCard.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>
+            /teacher/reportCard.xhtml
+        </from-view-id>
+        <navigation-case>
+            <from-outcome>index</from-outcome>
+            <to-view-id>/teacher/index.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>logout</from-outcome>
+            <to-view-id>/teacherLogin.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>userProfile</from-outcome>
+            <to-view-id>/teacher/userProfile.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>createAssignments</from-outcome>
+            <to-view-id>/teacher/createAssignments.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>gradeAssignments</from-outcome>
+            <to-view-id>/teacher/gradeAssignments.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>individualClassReportCard</from-outcome>
+            <to-view-id>/teacher/individualClassReportCard.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>reportCard</from-outcome>
+            <to-view-id>/teacher/reportCard.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>
             /teacher/userProfile.xhtml
         </from-view-id>
         <navigation-case>
