@@ -85,10 +85,6 @@
             /teacherLogin.xhtml
         </from-view-id>
         <navigation-case>
-            <from-outcome>newStudent</from-outcome>
-            <to-view-id>/newStudent.xhtml</to-view-id>
-        </navigation-case>
-        <navigation-case>
             <from-outcome>studentLogin</from-outcome>
             <to-view-id>/index.xhtml</to-view-id>
         </navigation-case>
@@ -106,6 +102,133 @@
             <redirect />
         </navigation-case>
     </navigation-rule> 
+    
+    <navigation-rule>
+        <from-view-id>
+            /adminLogin.xhtml
+        </from-view-id>
+        <navigation-case>
+            <from-outcome>studentLogin</from-outcome>
+            <to-view-id>/index.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>teacherLogin</from-outcome>
+            <to-view-id>/teacherLogin.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>logout</from-outcome>
+            <to-view-id>/adminLogin.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>success</from-outcome>
+            <to-view-id>admin/addClass.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+    </navigation-rule> 
+    
+    <navigation-rule>
+        <from-view-id>
+            /admin/addClass.xhtml
+        </from-view-id>
+        <navigation-case>
+            <from-outcome>logout</from-outcome>
+            <to-view-id>/adminLogin.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>addClass</from-outcome>
+            <to-view-id>/admin/addClass.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>addStudent</from-outcome>
+            <to-view-id>/admin/addStudent.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>addTeacher</from-outcome>
+            <to-view-id>/admin/addTeacher.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>createSchedule</from-outcome>
+            <to-view-id>/admin/createSchedule.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>
+            /admin/addStudent.xhtml
+        </from-view-id>
+        <navigation-case>
+            <from-outcome>logout</from-outcome>
+            <to-view-id>/adminLogin.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>addClass</from-outcome>
+            <to-view-id>/admin/addClass.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>addStudent</from-outcome>
+            <to-view-id>/admin/addStudent.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>addTeacher</from-outcome>
+            <to-view-id>/admin/addTeacher.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>createSchedule</from-outcome>
+            <to-view-id>/admin/createSchedule.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>
+            /admin/addTeacher.xhtml
+        </from-view-id>
+        <navigation-case>
+            <from-outcome>logout</from-outcome>
+            <to-view-id>/adminLogin.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>addClass</from-outcome>
+            <to-view-id>/admin/addClass.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>addStudent</from-outcome>
+            <to-view-id>/admin/addStudent.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>addTeacher</from-outcome>
+            <to-view-id>/admin/addTeacher.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>createSchedule</from-outcome>
+            <to-view-id>/admin/createSchedule.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>
+            /admin/createSchedule.xhtml
+        </from-view-id>
+        <navigation-case>
+            <from-outcome>logout</from-outcome>
+            <to-view-id>/adminLogin.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>addClass</from-outcome>
+            <to-view-id>/admin/addClass.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>addStudent</from-outcome>
+            <to-view-id>/admin/addStudent.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>addTeacher</from-outcome>
+            <to-view-id>/admin/addTeacher.xhtml</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>createSchedule</from-outcome>
+            <to-view-id>/admin/createSchedule.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
     
     <navigation-rule>
         <from-view-id>

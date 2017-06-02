@@ -26,7 +26,9 @@ import javax.inject.Named;
 @SessionScoped
 @ManagedBean
 public class Login implements Serializable {
-
+    
+    private String adminLogin;
+    private String adminPassword;
     private String teacherLogin;
     private String teacherPassword;
     private String studentLogin;
@@ -41,6 +43,24 @@ public class Login implements Serializable {
     public void setLoginUI(UIInput loginUI) {
         this.loginUI = loginUI;
     }
+
+    public String getAdminLogin() {
+        return adminLogin;
+    }
+
+    public void setAdminLogin(String adminLogin) {
+        this.adminLogin = adminLogin;
+    }
+
+    public String getAdminPassword() {
+        return adminPassword;
+    }
+
+    public void setAdminPassword(String adminPassword) {
+        this.adminPassword = adminPassword;
+    }
+    
+    
 
     public String getTeacherLogin() {
         return teacherLogin;
@@ -141,6 +161,40 @@ public class Login implements Serializable {
         
         return (login.equals(loginDB) && password.equals(passwordDB));
     }
+    
+    public boolean checkAdminLogin(String login, String password) throws SQLException {
+        Connection con = dbConnect.getConnection();
+        String loginDB, passwordDB;
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement ps
+                = con.prepareStatement(
+                        "select login, password from admin where"
+                                + " login = ? and password = ?");
+        
+        ps.setString(1, login);
+        ps.setString(2, password);
+        
+        ResultSet result = ps.executeQuery();
+        
+        if (! result.next()) {
+            return false;
+        }
+
+        loginDB = result.getString("login");
+        passwordDB = result.getString("password");
+        
+        System.out.println(loginDB);
+        System.out.println(passwordDB);
+        
+        result.close();
+        con.close();
+        
+        return (login.equals(loginDB) && password.equals(passwordDB));
+    }
 
     public void validateStudent(FacesContext context, UIComponent component, Object value)
             throws ValidatorException, SQLException {
@@ -163,6 +217,17 @@ public class Login implements Serializable {
             throw new ValidatorException(errorMessage);
         }
     }
+    
+    public void validateAdmin(FacesContext context, UIComponent component, Object value)
+            throws ValidatorException, SQLException {
+        String submittedLogin = loginUI.getLocalValue().toString();
+        String submittedPassword = value.toString();
+
+        if (! checkAdminLogin(submittedLogin, submittedPassword)) {
+            FacesMessage errorMessage = new FacesMessage("Wrong login/password");
+            throw new ValidatorException(errorMessage);
+        }
+    }
 
     public String studentGo() {
         Util.validateStudentSession(studentLogin);
@@ -174,6 +239,19 @@ public class Login implements Serializable {
         Util.validateTeacherSession(teacherLogin);
         
         return "success";
+    }
+    
+    public String adminGo() {       
+        Util.validateAdminSession(adminLogin);
+        
+        return "success";
+    }
+    
+    //logout event, invalidate session
+    public String adminLogout() {
+        Util.invalidateSession();
+
+        return "logout";
     }
     
     //logout event, invalidate session

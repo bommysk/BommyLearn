@@ -1,3 +1,19 @@
+DROP TABLE IF EXISTS admin CASCADE;
+
+CREATE TABLE admin (
+    id                  serial PRIMARY KEY,
+    login               varchar(40) NOT NULL UNIQUE,
+    password            varchar(40) NOT NULL,
+    first_name          varchar(100) NOT NULL,
+    last_name           varchar(100) NOT NULL,
+    email               varchar(100) NOT NULL,
+    postal_address      varchar(100) NOT NULL,
+    created_date        date NOT NULL
+);
+
+INSERT INTO admin(login, password, first_name, last_name, email, postal_address, created_date)
+VALUES('skahal', 'password', 'Shubham', 'Kahal', 'shubhamkahal@bommy.edu', '123 Main Street', '04/20/2017');
+
 DROP TABLE IF EXISTS student CASCADE;
 
 CREATE TABLE student (

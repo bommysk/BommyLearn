@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:templates="http://xmlns.jcp.org/jsf/composite/ezcomp">
+    <h:head>
+        <title>Admin Login</title>
+        
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="dist/css/styles.css" rel="stylesheet" type="text/css" />
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        
+        <script src="pace/pace.js"></script>
+        <link href="pace/themes/pace-theme-center-circle.css" rel="stylesheet" />
+    </h:head>
+    <h:body>
+        <templates:navigation />
+        
+        <!-- Logs out anyone who tries to access the login page. -->
+        <f:metadata>
+            <f:viewAction action="#{login.adminLogout}" />
+        </f:metadata>
+         
+        <div class="container">
+          
+            <h1 class="text-center">Admin Login</h1>
+            
+            <div class="col-md-6 col-md-offset-3">
+
+                <div class="panel panel-primary">
+
+                    <div class="panel-heading"><strong>Welcome</strong></div>
+
+                    <div class="panel-body">
+                        <h:form class="form-signin">
+                            <label for="login" class="sr-only">Login</label>
+                            <h:inputText id="username" value="#{login.adminLogin}" required="true"
+                                                    binding="#{login.loginUI}"
+                                                    requiredMessage="Your must enter your username."
+                                                    class="form-control"
+                                                    a:placeholder="Login" />
+                            <h:message for="login" style="color:red;margin:8px;"/>
+                            <label for="password" class="sr-only">Password</label>
+                            <h:inputSecret value="#{login.adminPassword}" required="true"
+                                                         requiredMessage="You must enter password"
+                                                         validatorMessage="Login/Password incorrect"
+                                                         validator="#{login.validateAdmin}"
+                                                         class="form-control"
+                                                         id="password"
+                                                         a:placeholder="Password" />
+                            <h:message for="password" style="color:red;margin:8px;"/>
+
+                            <h:commandButton class="btn btn-lg btn-primary btn-block" value="Sign in" action="#{login.adminGo}" />
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- /container -->
+    </h:body>
+</html>
+

@@ -28,9 +28,15 @@ public class Util implements Serializable {
         return "success";
     }
     
-     public static String validateTeacherSession(String teacherLogin) {
+    public static String validateTeacherSession(String teacherLogin) {
         HttpSession session = getSession();
         session.setAttribute("teacherLogin", teacherLogin);
+        return "success";
+    }
+    
+    public static String validateAdminSession(String adminLogin) {
+        HttpSession session = getSession();
+        session.setAttribute("adminLogin", adminLogin);
         return "success";
     }
 
