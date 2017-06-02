@@ -419,4 +419,95 @@ public class Forum {
         
         return resultSet.getInt("comment_count");
     }
+    
+    public List<String> getTeacherStudents() throws SQLException {
+        List<String> teacherStudents = new ArrayList<>();            
+        
+        if (this.cl.getName() == null || this.cl.getName().equals("Select Class")) {                        
+            return teacherStudents;
+        }
+        
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select distinct student.login as student_login from class_schedule join student "
+                                        + "on class_schedule.student_id = student.id join class on class_schedule.class_id = class.id where "
+                                        + "class_schedule.teacher_id = (select id from teacher where login = ?) and class.name = ?;");
+        
+        preparedStatement.setString(1, Util.getTeacherLogin());
+        preparedStatement.setString(2, this.cl.getName());
+        
+        ResultSet result = preparedStatement.executeQuery();
+        
+        while (result.next()) {
+            teacherStudents.add(result.getString("student_login"));
+        }
+        
+        return teacherStudents;
+    }
+    
+    public List<String> getStudentTeachers() throws SQLException {
+        List<String> studentTeachers = new ArrayList<>();
+        
+        if (this.cl.getName() == null || this.cl.getName().equals("Select Class")) {                        
+            return studentTeachers;
+        }
+        
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select distinct teacher.login as teacher_login from class_schedule join teacher "
+                                        + "on class_schedule.teacher_id = teacher.id join class on class_schedule.class_id = class.id where "
+                                        + "class_schedule.student_id = (select id from student where login = ?) and class.name = ?;");
+        
+        preparedStatement.setString(1, Util.getStudentLogin());
+        preparedStatement.setString(2, this.cl.getName());
+        
+        ResultSet result = preparedStatement.executeQuery();
+        
+        while (result.next()) {
+            studentTeachers.add(result.getString("teacher_login"));
+        }
+        
+        return studentTeachers;
+    }
+    
+    public List<String> getStudentClassMates() throws SQLException {
+        List<String> studentClassMates = new ArrayList<>();       
+        
+        if (this.cl.getName() == null || this.cl.getName().equals("Select Class")) {                        
+            return studentClassMates;
+        }
+        
+        Connection con = dbConnect.getConnection();
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select student.login as student_login from class_schedule join student on "
+                                        + "class_schedule.student_id = student.id where class_schedule.class_id in "
+                                        + "(select distinct class.id from class_schedule join class "
+                                        + "on class_schedule.class_id = class.id where "
+                                        + "class_schedule.student_id = (select id from student where login = ?) and class.name = ?) and "
+                                        + "student.id != (select id from student where login = ?);");
+        
+        preparedStatement.setString(1, Util.getStudentLogin());
+        preparedStatement.setString(2, this.cl.getName());
+        preparedStatement.setString(3, Util.getStudentLogin());      
+        
+        ResultSet result = preparedStatement.executeQuery();
+        
+        while (result.next()) {
+            studentClassMates.add(result.getString("student_login"));
+        }
+        
+        return studentClassMates;
+    }
+    
 }

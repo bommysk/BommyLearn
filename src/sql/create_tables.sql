@@ -102,7 +102,7 @@ INSERT INTO class_schedule(class_id, student_id, teacher_id) VALUES(2, 1, 1);
 
 INSERT INTO class_schedule(class_id, student_id, teacher_id) VALUES(3, 11, 2);
 
-INSERT INTO class_schedule(class_id, student_id, teacher_id) VALUES(1, 11, 2);
+INSERT INTO class_schedule(class_id, student_id, teacher_id) VALUES(1, 11, 1);
 
 DROP TABLE IF EXISTS attend CASCADE;
 /*  attendance_outcome possible values are: “in progress”, “completed successfully”, “completed partially” and “has not completed class” */

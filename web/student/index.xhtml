@@ -187,17 +187,18 @@
                                         <f:selectItem itemValue="Select Class" itemLabel="Select Class"/>
                                         <f:selectItems value="#{schedule.getStudentClasses()}" var="c"
                                         itemLabel="#{c}" itemValue="#{c}" />
+                                        <f:ajax render="teacherSelect studentSelect"/>
                                     </h:selectOneMenu>
                                     
-                                    <h:selectOneMenu value="#{forum.teacher.teacherLogin}" class="col-lg-4">
+                                    <h:selectOneMenu id="teacherSelect"  value="#{forum.teacher.teacherLogin}" class="col-lg-4">                                        
                                         <f:selectItem itemValue="Select Teacher" itemLabel="Select Teacher"/>
-                                        <f:selectItems value="#{schedule.getStudentTeachers()}" var="t"
+                                        <f:selectItems value="#{forum.getStudentTeachers()}" var="t"
                                         itemLabel="#{t}" itemValue="#{t}" />
                                     </h:selectOneMenu>
 
-                                    <h:selectOneMenu value="#{forum.student.studentLogin}" class="col-lg-4">
+                                    <h:selectOneMenu id="studentSelect" value="#{forum.student.studentLogin}" class="col-lg-4">                                        
                                         <f:selectItem itemValue="Select Student" itemLabel="Select Student"/>
-                                        <f:selectItems value="#{schedule.getStudentClassMates()}" var="cm"
+                                        <f:selectItems value="#{forum.getStudentClassMates()}" var="cm"
                                         itemLabel="#{cm}" itemValue="#{cm}" />
                                     </h:selectOneMenu>
                                     
