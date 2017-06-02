@@ -12,16 +12,21 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.TreeMap;
 import java.util.List;
 import javax.annotation.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.bean.RequestScoped;
+import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
+import javax.faces.context.FacesContext;
+import javax.faces.validator.ValidatorException;
 import javax.inject.Named;
 
 @Named(value = "schedule")
-@SessionScoped
+@RequestScoped
 @ManagedBean
 public class Schedule {
     private DBConnect dbConnect = new DBConnect();
@@ -29,6 +34,24 @@ public class Schedule {
     Student student = new Student();
     Teacher teacher = new Teacher();
     public String[] classList;
+    private UIInput studentLoginUI;
+    private UIInput classListUI;
+
+    public UIInput getStudentLoginUI() {
+        return studentLoginUI;
+    }
+
+    public void setStudentLoginUI(UIInput studentLoginUI) {
+        this.studentLoginUI = studentLoginUI;
+    }
+    
+    public UIInput getClassListUI() {
+        return classListUI;
+    }
+
+    public void setClassListUI(UIInput classListUI) {
+        this.classListUI = classListUI;
+    }
 
     public DBConnect getDbConnect() {
         return dbConnect;
@@ -307,8 +330,7 @@ public class Schedule {
 
         PreparedStatement preparedStatement = con.prepareStatement("insert into class_schedule(class_id, student_id, teacher_id) values(?, (select id from student where login = ?), (select id from teacher where login = ?));");
       
-        for (String classId : this.classList) {
-            System.out.println("CLASS ID: " + classId);
+        for (String classId : this.classList) {            
             preparedStatement.setInt(1, Integer.parseInt(classId));
             preparedStatement.setString(2, this.student.getStudentLogin());
             preparedStatement.setString(3, this.teacher.getTeacherLogin());
@@ -321,6 +343,110 @@ public class Schedule {
         clear();
         
         return "createSchedule";
+    }
+    
+    public boolean hasTimeConflict(String[] submittedClassList, String startTime, String endTime) throws SQLException {
+        Connection con = dbConnect.getConnection();
+        String timeCounter;
+        List<String> timeRange = new ArrayList<>();
+                
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select start_time, end_time from class where id = ?");
+        
+        ResultSet result;
+        
+        TreeMap<String, String> timeMap = new TreeMap<>();
+        
+        timeMap.put("07:10 AM", "07:10");
+        timeMap.put("08:10 AM", "08:10");
+        timeMap.put("09:10 AM", "09:10");
+        timeMap.put("10:10 AM", "10:10");
+        timeMap.put("11:10 AM", "11:10");
+        timeMap.put("12:10 PM", "12:10");
+        timeMap.put("01:10 PM", "13:10");
+        timeMap.put("02:10 PM", "14:10");
+        timeMap.put("03:10 PM", "15:10");
+        timeMap.put("04:10 PM", "16:10");
+        timeMap.put("05:10 PM", "17:10");
+        timeMap.put("06:10 PM", "18:10");
+        timeMap.put("07:10 PM", "19:10");
+        timeMap.put("08:10 PM", "20:10");
+        timeMap.put("09:10 PM", "21:10");
+        timeMap.put("10:10 PM", "22:10");
+        
+        for (String classId : submittedClassList) {
+            preparedStatement.setInt(1, Integer.parseInt(classId));
+            result = preparedStatement.executeQuery();
+            
+            while (result.next()) {
+                timeCounter = result.getString("start_time");
+                
+                for (String key : timeMap.keySet()) {
+                    if (timeMap.get(timeCounter).compareTo(timeMap.get(key)) >= 0 &&
+                            timeMap.get(result.getString("end_time")).compareTo(timeMap.get(key)) != 0) {
+                        timeRange.add(timeMap.get(key));
+                    }
+                    else {
+                        break;
+                    }
+                }                                                                
+            }
+            
+            if (timeRange.contains(startTime)) {
+                return true;
+            }
+        }                                
+        
+        
+        return false;
+    }
+    
+    public boolean hasClassConflict(String[] submittedClassList, String submittedStudentLogin, String submittedTeacherLogin) throws SQLException {                
+        Connection con = dbConnect.getConnection();
+
+        if (con == null) {
+            throw new SQLException("Can't get database connection");
+        }
+
+        PreparedStatement preparedStatement
+                = con.prepareStatement("select class.id as class_id, class.name, class.start_time, class.end_time from class_schedule join class "
+                                        + "on class_schedule.class_id = class.id where "
+                                        + "class_schedule.student_id = (select id from student where login = ?)"
+                                        + "and class_schedule.teacher_id = (select id from teacher where login = ?);");
+        
+        preparedStatement.setString(1, submittedStudentLogin);
+        
+        preparedStatement.setString(2, submittedTeacherLogin);
+        
+        ResultSet result = preparedStatement.executeQuery();
+        
+        while (result.next()) {
+            if (Arrays.asList(submittedClassList).contains("" + result.getInt("class_id"))) {
+                return true;
+            }
+            else if (hasTimeConflict(submittedClassList, result.getString("start_time"), result.getString("end_time"))) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    public void validateSchedule(FacesContext context, UIComponent component, Object value)
+            throws ValidatorException, SQLException {        
+        
+        String[] submittedClassList = (String[])classListUI.getLocalValue();
+        String submittedStudentLogin = studentLoginUI.getLocalValue().toString();
+        String submittedTeacherLogin = value.toString();
+
+        if (hasClassConflict(submittedClassList, submittedStudentLogin, submittedTeacherLogin)) {
+            FacesMessage errorMessage = new FacesMessage("These classes have a time conflict.");
+            throw new ValidatorException(errorMessage);
+        }
     }
     
     public void clear() {

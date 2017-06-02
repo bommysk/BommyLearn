@@ -40,7 +40,7 @@
     <managed-bean>
         <managed-bean-name>schedule</managed-bean-name>
         <managed-bean-class>Schedule</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
+        <managed-bean-scope>request</managed-bean-scope>
     </managed-bean> 
     <managed-bean>
         <managed-bean-name>assignment</managed-bean-name>
@@ -137,18 +137,22 @@
         <navigation-case>
             <from-outcome>addClass</from-outcome>
             <to-view-id>/admin/addClass.xhtml</to-view-id>
+            <redirect />
         </navigation-case>
         <navigation-case>
             <from-outcome>addStudent</from-outcome>
             <to-view-id>/admin/addStudent.xhtml</to-view-id>
+            <redirect />
         </navigation-case>
         <navigation-case>
             <from-outcome>addTeacher</from-outcome>
             <to-view-id>/admin/addTeacher.xhtml</to-view-id>
+            <redirect />
         </navigation-case>
         <navigation-case>
             <from-outcome>createSchedule</from-outcome>
             <to-view-id>/admin/createSchedule.xhtml</to-view-id>
+            <redirect />
         </navigation-case>
     </navigation-rule>
     
@@ -163,18 +167,22 @@
         <navigation-case>
             <from-outcome>addClass</from-outcome>
             <to-view-id>/admin/addClass.xhtml</to-view-id>
+            <redirect />
         </navigation-case>
         <navigation-case>
             <from-outcome>addStudent</from-outcome>
             <to-view-id>/admin/addStudent.xhtml</to-view-id>
+            <redirect />
         </navigation-case>
         <navigation-case>
             <from-outcome>addTeacher</from-outcome>
             <to-view-id>/admin/addTeacher.xhtml</to-view-id>
+            <redirect />
         </navigation-case>
         <navigation-case>
             <from-outcome>createSchedule</from-outcome>
             <to-view-id>/admin/createSchedule.xhtml</to-view-id>
+            <redirect />
         </navigation-case>
     </navigation-rule>
     
@@ -189,18 +197,22 @@
         <navigation-case>
             <from-outcome>addClass</from-outcome>
             <to-view-id>/admin/addClass.xhtml</to-view-id>
+            <redirect />
         </navigation-case>
         <navigation-case>
             <from-outcome>addStudent</from-outcome>
             <to-view-id>/admin/addStudent.xhtml</to-view-id>
+            <redirect />
         </navigation-case>
         <navigation-case>
             <from-outcome>addTeacher</from-outcome>
             <to-view-id>/admin/addTeacher.xhtml</to-view-id>
+            <redirect />
         </navigation-case>
         <navigation-case>
             <from-outcome>createSchedule</from-outcome>
             <to-view-id>/admin/createSchedule.xhtml</to-view-id>
+            <redirect />
         </navigation-case>
     </navigation-rule>
     
@@ -215,18 +227,22 @@
         <navigation-case>
             <from-outcome>addClass</from-outcome>
             <to-view-id>/admin/addClass.xhtml</to-view-id>
+            <redirect />
         </navigation-case>
         <navigation-case>
             <from-outcome>addStudent</from-outcome>
             <to-view-id>/admin/addStudent.xhtml</to-view-id>
+            <redirect />
         </navigation-case>
         <navigation-case>
             <from-outcome>addTeacher</from-outcome>
             <to-view-id>/admin/addTeacher.xhtml</to-view-id>
+            <redirect />
         </navigation-case>
         <navigation-case>
             <from-outcome>createSchedule</from-outcome>
             <to-view-id>/admin/createSchedule.xhtml</to-view-id>
+            <redirect />
         </navigation-case>
     </navigation-rule>
     

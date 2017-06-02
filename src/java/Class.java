@@ -13,18 +13,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Time;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import javax.annotation.ManagedBean;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.SessionScoped;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.validator.ValidatorException;
 import javax.inject.Named;
 
 @Named(value = "class")
@@ -170,17 +164,27 @@ public class Class implements Serializable {
                                 "04:10 PM", "05:10 PM", "06:10 PM", "07:10 PM", "08:10 PM",
                                 "09:10 PM", "10:10 PM" };
         
+        HashMap<String, String> timeMap = new HashMap<>();
+        
+        timeMap.put("07:10 AM", "07:10");
+        timeMap.put("08:10 AM", "08:10");
+        timeMap.put("09:10 AM", "09:10");
+        timeMap.put("10:10 AM", "10:10");
+        timeMap.put("11:10 AM", "11:10");
+        timeMap.put("12:10 PM", "12:10");
+        timeMap.put("01:10 PM", "13:10");
+        timeMap.put("02:10 PM", "14:10");
+        timeMap.put("03:10 PM", "15:10");
+        timeMap.put("04:10 PM", "16:10");
+        timeMap.put("05:10 PM", "17:10");
+        timeMap.put("06:10 PM", "18:10");
+        timeMap.put("07:10 PM", "19:10");
+        timeMap.put("08:10 PM", "20:10");
+        timeMap.put("09:10 PM", "21:10");
+        timeMap.put("10:10 PM", "22:10");
+        
         for (String time : times) {
-            if (this.startTime.split(" ")[1].equals("AM") && time.split(" ")[1].equals("PM")) {
-                endTimes.add(time);
-            }
-            else if (this.startTime.split(" ")[1].equals("PM") && time.split(" ")[1].equals("AM")) {
-                
-            }
-            else if (time.equals("12:10 PM")) {
-              
-            }
-            else if (this.startTime.equals("12:10 PM") || this.startTime.split(" ")[0].compareTo(time.split(" ")[0]) < 0) {
+            if (timeMap.get(this.startTime).compareTo(timeMap.get(time)) < 0) {
                 endTimes.add(time);
             }
         }

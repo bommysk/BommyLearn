@@ -1,72 +1,117 @@
-#!/usr/bin/python
-# Copyright 2010 Google Inc.
-# Licensed under the Apache License, Version 2.0
-# http://www.apache.org/licenses/LICENSE-2.0
+#lang typed/racket
+(require typed/rackunit)
 
-# Google's Python Class
-# http://code.google.com/edu/languages/google-python-class/
+; String -> String
+; This function consumes a string and extracts
+; the last 1String from a non-empty string.
+(define (l-string [str : String]) : String
+  (if (= (string-length str) 1)
+      str
+      (l-string (substring str 1))))
 
-# Updated for Python3 by Foaad Khosmood
+; test cases
+(check-equal? (l-string "Regular String") "g")
+(check-equal? (l-string "12345") "5")
+(check-equal? (l-string "     ") " ")
+(check-equal? (l-string "///// /") "/")
+(check-equal? (l-string "String") "g")
 
-import sys
-import re
+; Boolean Boolean -> Boolean
+; This function consumes two Boolean values (sunny, friday).
+; Its answer is #true if sunny is false or friday is true.
+(define (sunny-or-friday [sunny : Boolean] [friday : Boolean]) : Boolean
+  (or (equal? sunny #f) (equal? friday #t)))
 
-"""Baby Names exercise
+; test cases
+(check-equal? (sunny-or-friday #f #t) #t)
+(check-equal? (sunny-or-friday #f #f) #t)
+(check-equal? (sunny-or-friday #t #t) #t)
+(check-equal? (sunny-or-friday #t #f) #f)
 
-Define the extract_names() function below and change main()
-to call it.
+; This piece of code defines constants used in the sample
+; program.
+(: TOTAL-ATTENDEES Number)
+(define TOTAL-ATTENDEES 120)
 
-For writing regex, it's nice to include a copy of the target
-text for inspiration.
+(: INITIAL-PRICE Number)
+(define INITIAL-PRICE 15)
 
-Here's what the html looks like in the baby.html files:
-...
-<h3 align="center">Popularity in 1990</h3>
-....
-<tr align="right"><td>1</td><td>Michael</td><td>Jessica</td>
-<tr align="right"><td>2</td><td>Christopher</td><td>Ashley</td>
-<tr align="right"><td>3</td><td>Matthew</td><td>Brittany</td>
-...
+(: AVG-ATTENDANCE-CHANGE Number)
+(define AVG-ATTENDANCE-CHANGE 15)
 
-Suggested milestones for incremental development:
- -Extract the year and print it
- -Extract the names and rank numbers and just print them
- -Get the names data into a dict and print it
- -Build the [year, 'name rank', ... ] list and print it
- -Fix main() to use the extract_names list
-"""
+(: AVG-PRICE-CHANGE Number)
+(define AVG-PRICE-CHANGE 0.1)
 
-def extract_names(filename):
-  """
-  Given a file name for baby.html, returns a list starting with the year string
-  followed by the name-rank strings in alphabetical order.
-  ['2006', 'Aaliyah 91', Aaron 57', 'Abagail 895', ' ...]
-  """
-  # +++your code here+++
-  re.compile(r'<tr align=\"right\"><td>\d+</td><td>\w+</td><td>\w+</td>', '<tr align="right"><td>1</td><td>Michael</td><td>Jessica</td>')
-  return
+(: FIXED-COST Number)
+(define FIXED-COST 180)
 
+(: VARIABLE-COST Number)
+(define VARIABLE-COST 0.04)
 
-def main():
-  # This command-line parsing code is provided.
-  # Make a list of command line arguments, omitting the [0] element
-  # which is the script itself.
-  args = sys.argv[1:]
+; Sample program
+(: attendees (-> Number Number))
+(define (attendees ticket-price)
+  (- TOTAL-ATTENDEES (* (- ticket-price INITIAL-PRICE) (/ AVG-ATTENDANCE-CHANGE AVG-PRICE-CHANGE))))
 
-  if not args:
-    print("usage: [--summaryfile] file [file ...]")
-    sys.exit(1)
+(: revenue (-> Number Number))
+(define (revenue ticket-price)
+  (* ticket-price (attendees ticket-price)))
 
-  # Notice the summary flag and remove it from args if it is present.
-  summary = False
-  if args[0] == '--summaryfile':
-    summary = True
-    del args[0]
+(: cost (-> Number Number))
+(define (cost ticket-price)
+  (+ FIXED-COST (* VARIABLE-COST (attendees ticket-price))))
 
-  # +++your code here+++
-  # For each filename, get the names, then either print the text output
-  # or write it to a summary file
-  
-if __name__ == '__main__':
-  main()
+(: profit (-> Number Number))
+(define (profit ticket-price)
+  (- (revenue ticket-price)
+     (cost ticket-price)))
 
+; test cases
+(check-equal? (attendees 1) 2220.0)
+(check-equal? (attendees 2) 2070.0)
+(check-equal? (attendees 3) 1920.0)
+(check-equal? (attendees 4) 1770.0)
+(check-equal? (attendees 5) 1620.0)
+
+; Number -> Number
+; This function consumes a deposit amount and produces the
+; actual amount of interest that the money earns in a year.
+; The bank pays a flat 4% for deposits of up to $1,000, a
+; flat 4.5% per year for deposits of up to $5,000, and a
+; flat 5% for deposits of more than $5,000.
+(define (get-interest [deposit-amount : Real]) : Real
+  (cond
+   [(<= deposit-amount 1000) (* .04 deposit-amount)]
+   [(<= deposit-amount 5000) (* .045 deposit-amount)]
+   [else (* .05 deposit-amount)]))
+
+; test cases
+(check-equal? (get-interest 1) .04)
+(check-equal? (get-interest 1000) 40.0)
+(check-equal? (get-interest 4000) 180.0)
+(check-equal? (get-interest 5000) 225.0)
+(check-equal? (get-interest 10000) 500.0)
+
+(define-type furniture (U desk bookshelf))
+(struct desk ([width : Number] [height : Number] [depth : Number]) #:transparent)
+(struct bookshelf ([shelf-width : Number] [shelves : Number] [depth : Number]) #:transparent)
+
+; examples
+(desk 1 2 3)
+(bookshelf 4 5 6)
+
+; furniture -> Number
+; This function consumes a piece of furniture and
+; returns its footprint, that is how much floor
+; space it takes up.
+(define (furniture-footprint [furn : furniture]) : Number
+  (match furn
+   [(desk width height depth) (* width (desk-depth furn))]
+   [(bookshelf shelf-width shelves depth) (* (bookshelf-shelf-width furn) (bookshelf-depth furn))]))
+
+; test cases
+(check-equal? (furniture-footprint (desk 1 2 3)) 3)
+(check-equal? (furniture-footprint (bookshelf 2 2 2)) 4)
+(check-equal? (furniture-footprint (desk 10 2 3)) 30)
+(check-equal? (furniture-footprint (bookshelf 10 15 1)) 10)
+(check-equal? (furniture-footprint (desk 2 2 5)) 10)

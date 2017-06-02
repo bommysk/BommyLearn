@@ -1,0 +1,105 @@
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <sys/stat.h>
+#include <string.h>
+
+#define PARENT_DIR ".."
+#define CURRENT_DIR "."
+#define MAX_PATH_LENGTH 4096
+
+void printError(char errorType[], char file[], int line)
+{
+
+}
+
+void printPath() 
+{
+	struct dirent *directoryEntry;
+	DIR *parentDirectory;
+	char *filePath = calloc(sizeof(char), MAX_PATH_LENGTH);
+	struct stat currentStats;
+	struct stat parentStats;
+	struct stat dirStat;
+	int counter = MAX_PATH_LENGTH;
+
+	if (stat(CURRENT_DIR, &currentStats) < 0)
+	{
+		printf("ERROR\n");
+	}
+
+	if (stat(PARENT_DIR, &parentStats) < 0)
+	{
+		printf("ERROR\n");
+	}
+
+	if (!(parentDirectory = opendir(PARENT_DIR)))
+	{
+		printf("ERROR\n");
+	}
+	printf("before loop %llu   %llu\n", currentStats.st_ino, parentStats.st_ino);
+	printf("before loop %d   %d\n", currentStats.st_dev, parentStats.st_dev);
+
+	while (currentStats.st_ino != parentStats.st_ino ||
+		currentStats.st_dev != parentStats.st_dev)
+	{
+		printf("Moving up dir\n");
+
+		while ((directoryEntry = readdir(parentDirectory)))
+		{
+			if (stat(directoryEntry->d_name, &dirStat) < 0)
+			{
+				/* Error */
+				printf("ERROR\n");
+			}
+
+			if (dirStat.st_ino == currentStats.st_ino &&
+				dirStat.st_ino != parentStats.st_ino)
+			{
+				if (strlen(directoryEntry->d_name) >= MAX_PATH_LENGTH)
+				{
+					printf("ERROR\n");
+				}
+				else
+				{
+					printf("In here: %lu\n", strlen(directoryEntry->d_name));
+					printf("NAME: %s\n", directoryEntry->d_name);
+					counter = counter - strlen(directoryEntry->d_name) - 1;
+					strcpy(filePath + counter, directoryEntry->d_name);
+					printf("RIGHT HERE\n");
+				}
+			}
+			else if (dirStat.st_ino == parentStats.st_ino)
+			{
+				counter--;
+				strcpy(filePath + counter, "/");
+			}
+		}
+
+		chdir(PARENT_DIR);
+
+		if (stat(CURRENT_DIR, &currentStats) < 0)
+		{
+			printf("ERROR\n");
+		}
+
+		if (stat(PARENT_DIR, &parentStats) < 0)
+		{
+			printf("ERROR\n");
+		}
+
+		if (!(parentDirectory = opendir(PARENT_DIR)))
+		{
+			printf("ERROR\n");
+		}
+	}
+	printf("Counter: %d\n", counter);
+	printf("%s\n", filePath + counter);
+}
+
+int main(int argc, char **argv)
+{
+	printPath();
+}

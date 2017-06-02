@@ -22,7 +22,11 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
     <script src="../pace/pace.js"></script>
-    <link href="../pace/themes/pace-theme-center-circle.css" rel="stylesheet" />        
+    <link href="../pace/themes/pace-theme-center-circle.css" rel="stylesheet" /> 
+    
+    <style>
+        .active {font-weight:bold};
+    </style>
     
 </h:head>
 
@@ -46,7 +50,8 @@
                         
                         <div class="form-group">
                             <label>Class:</label>
-                            <h:selectManyListbox  id="class" value="#{schedule.classList}" class="form-control">                                        
+                            <h:selectManyListbox value="#{schedule.classList}" class="form-control"
+                                           binding="#{schedule.classListUI}">                                        
                                 <f:selectItems value="#{cl.getClassList()}" var="c"
                                                itemLabel="#{cl.makeLabel(c.name, c.daySchedule, c.startTime, c.endTime)}" itemValue="#{c.id}" />
                             </h:selectManyListbox >
@@ -54,7 +59,8 @@
                         
                         <div class="form-group">
                             <label>Student:</label>
-                            <h:selectOneMenu id="student" value="#{schedule.student.studentLogin}" class="form-control">                                        
+                            <h:selectOneMenu value="#{schedule.student.studentLogin}" class="form-control"
+                                             binding="#{schedule.studentLoginUI}">                                        
                                 <f:selectItems value="#{student.getAllLogins()}" var="s"
                                         itemLabel="#{s}" itemValue="#{s}" />
                             </h:selectOneMenu>
@@ -62,10 +68,12 @@
                         
                         <div class="form-group">
                             <label>Teacher:</label>
-                            <h:selectOneMenu id="teacher" value="#{schedule.teacher.teacherLogin}" class="form-control">                                        
+                            <h:selectOneMenu id="teacher" value="#{schedule.teacher.teacherLogin}" class="form-control"
+                                             validator="#{schedule.validateSchedule}">                                        
                                 <f:selectItems value="#{teacher.getAllLogins()}" var="t"
                                         itemLabel="#{t}" itemValue="#{t}" />
                             </h:selectOneMenu>
+                            <h:message for="teacher" style="color:red;margin:8px;"/>
                         </div> 
 
                         <h:commandButton value="Register" class="btn btn-primary" action="#{schedule.addToSchedule}" />
