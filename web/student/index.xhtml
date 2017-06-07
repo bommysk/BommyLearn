@@ -183,12 +183,14 @@
                         <div class="panel-footer">
                             <div class="input-group">
                                 <h:form>
-                                    <h:selectOneMenu value="#{forum.cl.name}" class="col-lg-4">
+                                    <h:selectOneMenu id="class" value="#{forum.cl.name}" class="col-lg-4" 
+                                                     validatorMessage="You must select a class."
+                                                     validator="#{forum.validateClass}">
                                         <f:selectItem itemValue="Select Class" itemLabel="Select Class"/>
                                         <f:selectItems value="#{schedule.getStudentClasses()}" var="c"
                                         itemLabel="#{c}" itemValue="#{c}" />
                                         <f:ajax render="teacherSelect studentSelect"/>
-                                    </h:selectOneMenu>
+                                    </h:selectOneMenu>                                    
                                     
                                     <h:selectOneMenu id="teacherSelect"  value="#{forum.teacher.teacherLogin}" class="col-lg-4">                                        
                                         <f:selectItem itemValue="Select Teacher" itemLabel="Select Teacher"/>
@@ -202,7 +204,13 @@
                                         itemLabel="#{cm}" itemValue="#{cm}" />
                                     </h:selectOneMenu>
                                     
-                                    <h:inputTextarea id="btn-input" class="form-control input-sm" value="#{forum.comment}" style="width:100%; padding:3px; float:none; margin:3px auto; border:1px solid black;" />
+                                    <h:message for="class" style="color:red;margin:8px;"/>
+                                    
+                                    <h:inputTextarea id="comment-input" class="form-control input-sm" value="#{forum.comment}" 
+                                                     style="width:100%; padding:3px; float:none; margin:3px auto; border:1px solid black;"
+                                                     required="true" requiredMessage="Your must enter a message."/>
+                                    <h:message for="comment-input" style="color:red;margin:8px;"/>
+                                    
                                     <span class="input-group-btn">
                                         <h:commandButton class="btn btn-warning btn-sm" id="btn-chat" action="#{forum.addStudentComment()}" value="Send">
                                             <f:ajax execute="@form" render=":forum :forumInput"/>

@@ -1,0 +1,118 @@
+#!/usr/local/bin/python3
+#CPE 466 | Spring 2017 | Quiz 3
+
+import sys,os
+from numpy import array
+from nltk.cluster import euclidean_distance
+import math
+
+#read in all the test scores (three numbers on each line)
+f = open(sys.argv[1])
+lines = f.readlines()
+f.close()
+
+#read initial "random" cluster coordinates:
+centroids = lines[0].strip().split("\t")
+centroid1 = array([int(c) for c in centroids[0].split(",")])
+centroid2 = array([int(c) for c in centroids[1].split(",")])
+
+
+listOfVectors = []
+for line in lines[1:]:
+   content = line.strip().split("\t")
+   scores = array([int(score) for score in content[1:]])
+   listOfVectors.append(scores)
+   print("student:",content[0],", scores:",scores)
+
+print("\nTwo initial centroid coordinates are: ",centroid1,"and",centroid2)
+
+#Calculating distances using euclidean_distance which operates on numpy arrays
+#python lists of numerics can be converted to numpy arrays by array([list])
+#distance = euclidean_distance(array([1,1]),array([2,2]))
+
+distance = euclidean_distance(centroid1,centroid2)
+print("and the distance between them is",distance)
+
+#now perform the k-means clustering (k=2) for 2 more iterations, i.e. 2 more sets of centroid calculations
+
+class Cluster:
+
+    def __init__(self, points):
+        # The points that belong to this cluster
+        self.points = points
+
+        # Set up the initial centroid (this is usually based off one point)
+        self.centroid = self.calculateCentroid()
+
+    def update(self, points):
+        old_centroid = self.centroid
+        self.points = points
+        self.centroid = self.calculateCentroid()
+
+    def calculateCentroid(self):
+        numPoints = len(self.points)
+        # Get a list of all coordinates in this cluster
+        coords = self.points
+        # Reformat that so all x's are together, all y'z etc.
+        unzipped = zip(*coords)
+        # Calculate the mean for each dimension
+        centroid_coords = [sum(dList)/numPoints for dList in unzipped]
+
+        return centroid_coords
+
+def kmeans(initial, points, k):
+
+    # Create k clusters using those centroids
+    # Note: Cluster takes lists, so we wrap each point in a list here.
+    clusters = [Cluster([p]) for p in initial]
+
+    # Loop through the dataset until we loop k times
+    loopCounter = 0
+    while loopCounter < k:
+        # Create a list of lists to hold the points in each cluster
+        lists = [[] for _ in clusters]
+        clusterCount = len(clusters)
+
+        # Start counting loops
+        loopCounter += 1
+        # For every point in the dataset ...
+        for p in points:
+            # Get the distance between that point and the centroid of the first
+            # cluster.
+            smallest_distance = euclidean_distance(array(p), array(clusters[0].centroid))
+
+            # Set the cluster this point belongs to
+            clusterIndex = 0
+
+            # For the remainder of the clusters ...
+            for i in range(clusterCount - 1):
+                # calculate the distance of that point to each other cluster's
+                # centroid.
+                distance = euclidean_distance(array(p), array(clusters[i+1].centroid))
+                # If it's closer to that cluster's centroid update what we
+                # think the smallest distance is
+                if distance < smallest_distance:
+                    smallest_distance = distance
+                    clusterIndex = i+1
+            # After finding the cluster the smallest distance away
+            # set the point to belong to that cluster
+            lists[clusterIndex].append(p)
+        
+        for i in range(clusterCount):
+        	clusters[i].update(lists[i])
+
+    for i in range(k):
+        clusters[i].points = lists[i]
+        clusters[i].points = lists[i]
+
+    return clusters
+
+finalVectors = [list(a) for a in listOfVectors]
+clusters = kmeans([centroid1, centroid2], finalVectors, 2)
+firstCluster = clusters[0]
+secondCluster = clusters[1]
+
+#output example for formatting purposes, output is just an example
+print("3rd iteration centroids are: (%.3f,%.3f) and (%.3f,%.3f)" % (firstCluster.centroid[0], firstCluster.centroid[1], secondCluster.centroid[0], secondCluster.centroid[1]))
+print("clusters are:\ncluster 1(size = " + str(len(firstCluster.points)) + "):",firstCluster.points,"\ncluster 2(size = "+str(len(secondCluster.points))+"):",secondCluster.points)
+

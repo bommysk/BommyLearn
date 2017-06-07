@@ -1,0 +1,66 @@
+ #lang plai-typed
+
+(define (rev-str-app str-list)
+  (if (= (length str-list) 1)
+      (car str-list)
+      (string-append (rev-str-app (cdr str-list)) (car str-list))))
+
+(rev-str-app (list "juice" "ball" "frog"))
+
+(define-type Processor
+  [Intel (n : number)]
+  [AMD (n : number)]
+  [ARM (n : number)])
+
+; (list (Intel 1) (AMD 1))
+; If list is empty return empty
+; Else if head is Intel, return (cons head (recurse rest))
+; Else return (recurse rest)
+
+(define (onlyIntels [processor-lst : (listof Processor)]) : (listof Processor)
+  (if (empty? processor-lst)
+      empty
+      (if (Intel? (first processor-lst))
+          (cons (first processor-lst) (onlyIntels (rest processor-lst)))
+          (onlyIntels (rest processor-lst)))))
+
+(define (onlyAMDs processor-lst)
+  (if (empty? processor-lst)
+      empty
+      (if (AMD? (first processor-lst))
+          (cons (first processor-lst) (onlyAMDs (rest processor-lst)))
+          (onlyAMDs (rest processor-lst)))))
+
+(define (onlyThese [processor-lst : (listof Processor)] predicate) : (listof Processor)
+  (if (empty? processor-lst)
+      empty
+      (if (predicate (first processor-lst))
+          (cons (first processor-lst) (onlyThese (rest processor-lst) predicate))
+          (onlyThese (rest processor-lst) predicate))))
+
+; (onlyIntels (list (Intel 5) (AMD 1)))
+; (onlyAMDs (list (Intel 5) (AMD 1)))
+; (onlyThese (list (Intel 5) (AMD 1)) AMD?)
+
+(define (my-append lst1 lst2)
+  (append lst1 lst2))
+
+; (my-append (list 1 2) (list 3 4))
+
+; Develop the my-drop function that consumes a list and a number n and
+; returns the list that remains after the first ’n’ elements of the
+; input list. If the length of the input list is <= n, this function
+; returns an empty list.
+
+(define (my-drop lst n)
+  (if (= n 0)
+      lst  
+      (if (<= (length lst) n)
+          empty
+          (my-drop (rest lst) (- n 1)))))
+
+(my-drop empty 2)
+
+
+
+

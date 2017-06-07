@@ -207,9 +207,9 @@ public class Assignment implements Serializable {
         }
 
         PreparedStatement preparedStatement
-                = con.prepareStatement("select assignment.id as assignment_id, assignment_submit.id as assignment_submit_id, assignment_submit.student_id, assignment_submit.submit_date,"
+                = con.prepareStatement("select assignment.name as assignment_name, assignment_submit.id as assignment_submit_id, student.login as student_login, assignment_submit.submit_date,"
                         + " assignment.due_date, assignment_submit.file_path from assignment_submit join assignment on"
-                        + " assignment_submit.assignment_id = assignment.id where (graded = 0) and assignment.teacher_id = (select id from teacher where login = ?);");
+                        + " assignment_submit.assignment_id = assignment.id join student on assignment_submit.student_id = student.id where (graded = 0) and assignment.teacher_id = (select id from teacher where login = ?);");
         
         preparedStatement.setString(1, Util.getTeacherLogin());
         
@@ -222,13 +222,13 @@ public class Assignment implements Serializable {
         while (result.next()) {
             Assignment assignment = new Assignment();
             
-            assignment.setId(result.getInt("assignment_id"));
+            assignment.setName(result.getString("assignment_name"));
             
             assignment.setAssignmentSubmitId(result.getInt("assignment_submit_id"));
             
             assignment.student = new Student();
             
-            assignment.student.setId(result.getInt("student_id"));
+            assignment.student.setStudentLogin(result.getString("student_login"));                        
             
             assignment.setSubmitDate(result.getDate("submit_date"));
             
@@ -765,7 +765,7 @@ public class Assignment implements Serializable {
 
         PreparedStatement preparedStatement
                 = con.prepareStatement("select count(*) as past_deadline_count from assignment join class_schedule on assignment.class_id = class_schedule.class_id\n" +
-                                        "where student_id = (select id from student where login = ?) and due_date < now();");
+                                        "where student_id = (select id from student where login = ?) and due_date < now() and assignment.id not in (select assignment_id from assignment_submit);");
         
         preparedStatement.setString(1, Util.getStudentLogin());
         

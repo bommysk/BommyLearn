@@ -1,0 +1,383 @@
+#!/usr/local/bin/python3
+
+import pandas as pd
+from collections import defaultdict
+from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.corpus import stopwords
+from string import punctuation
+from heapq import nlargest
+from math import log
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.cluster import KMeans
+import string
+import re
+import nltk.classify.decisiontree
+import nltk.classify.naivebayes
+import random
+import nltk
+from nltk.corpus import cmudict 
+from nltk.tokenize import sent_tokenize, word_tokenize
+import time
+
+train_data = pd.read_json("/Users/shubhamkahal/Downloads/train.json").head(200)
+test_data = pd.read_json("/Users/shubhamkahal/Downloads/test.json").head(100)
+
+# take out fields we don't need
+del train_data['building_id']
+del train_data['created']
+del train_data['display_address']
+del train_data['latitude']
+del train_data['longitude']
+del train_data['photos']
+del train_data['street_address']
+
+del test_data['building_id']
+del test_data['created']
+del test_data['display_address']
+del test_data['latitude']
+del test_data['longitude']
+del test_data['photos']
+del test_data['street_address']
+
+#test_data = pd.read_json("/Users/shubhamkahal/Downloads/test.json").head(200)
+
+class WordFeatures:
+    def __init__(self, min_cut=0.1, max_cut=0.9):
+        # class constructor - takes in min and max cutoffs for 
+        # frequency
+        self._stopwords = set(stopwords.words('english') + list(punctuation) + [u"'s",'"'])
+
+    def clean_html(self, raw_html):
+        cleanr = re.compile('<.*?>')
+        cleantext = re.sub(cleanr, '', raw_html)
+        return cleantext
+
+    def is_number(self, s):
+        try:
+            float(s)
+            return True
+        except ValueError:
+            return False
+
+    def get_number_of_syllables(self, word):
+        if self.is_number(word):
+            return 1
+
+        d = cmudict.dict() 
+
+        return [len(list(y for y in x if y[-1].isdigit())) for x in d[word.lower()]][0]
+    
+word_features = WordFeatures()
+
+def get_price_bins(price_list, bin_num):
+    prices = []
+    bins = []
+
+    for price in price_list:
+        prices.append(int(price))
+
+    prices.sort()
+
+    bin_size = (len(prices) // bin_num)
+    counter_start = 0
+    counter_end = 1
+
+    while (counter_start < bin_num):
+      bins.append(prices[(counter_start * bin_size) : (counter_end * bin_size)])
+
+      counter_start += 1
+      counter_end += 1
+
+    return bins
+
+def bin_price(price, price_bins):
+   # price is gauranteed to be in a bin
+   for bin in price_bins:
+      if price >= bin[0] and price <= bin[-1]:
+         return sum(bin) / len(bin)
+
+def get_uppercase_lowercase_ratio(description):
+    if len(description) == 0:
+        return {"uppercase_ratio" : 0, "lowercase_ratio" : 0}
+
+    words = description.split(' ')
+    upper_count = 0
+    lower_count = 0
+
+    for word in words:
+        for letter in word:
+            if letter.isupper():
+                upper_count += 1
+            else:
+                lower_count += 1
+
+    return {"uppercase_ratio" : (upper_count / len(description)), "lowercase_ratio" : (lower_count / len(description))}
+
+def get_completeness_score(row, columns):
+    completeness_score = 0
+
+    for column in columns:
+        if isinstance(row[column], (int, float, complex)) or len(row[column]) > 0:
+            completeness_score += 1
+
+    return completeness_score
+
+def get_fog_index(description):
+    if (len(description) == 0):
+        return 0
+
+    sentences = sent_tokenize(description)
+    words = word_tokenize(description)
+    complex_word_count = 0
+    simple_word_count = 0
+
+    for word in words:
+        num_syllables = word_features.get_number_of_syllables(word)
+        print(word, "num_syllables:", num_syllables)
+        if num_syllables >= 3:
+            complex_word_count += 1
+        else:
+            simple_word_count += 1
+
+    return 0.4 * ((len(words) / len(sentences)) + (100 * (complex_word_count / simple_word_count)))
+
+def get_record_list(data, all_strings, price_list, all_trigrams):
+    price_bins = get_price_bins(price_list, 5)
+
+    features = defaultdict(None)
+    record_list = []
+    columns = list(data.columns.values)
+
+    for index, row in data.iterrows():
+
+        features['bathrooms'] = row['bathrooms']
+        features['bedrooms'] = row['bedrooms']
+        features['price'] = bin_price(row['price'], price_bins)
+        features['manager_id'] = row['manager_id']
+
+        uppercase_lowercase_ratio = get_uppercase_lowercase_ratio(row['description'])
+
+        features['uppercase_ratio'] = uppercase_lowercase_ratio['uppercase_ratio']
+        features['lowercase_ratio'] = uppercase_lowercase_ratio['lowercase_ratio']
+
+        # features['fog_index'] = get_fog_index(row['description'])
+        
+        features['completeness_score'] = get_completeness_score(row, columns)
+
+        if (len(row['description']) > 0):
+            features['text_richness'] = len(set(row['description'])) / len(row['description'])
+        else:
+            features['text_richness'] = 0
+
+        for string_list in all_strings:
+            for word in string_list:
+                if len(word) == 3:
+                    all_trigrams.add(word.lower())
+                elif len(word) > 3:
+                    for window in range (len(word) - 2):
+                        all_trigrams.add(word[window:window+3].lower())
+
+            for string in string_list:
+                if string in row['description'].lower():
+                    features[string.lower()] = True
+                else:
+                    features[string.lower()] = False
+
+        for trigram in all_trigrams:
+          if trigram in row['description']:
+             features[trigram] = True
+          else:
+             features[trigram] = False
+        
+        if 'interest_level' in row:
+            record_list.append((features.copy(), row['interest_level'])) 
+        features = defaultdict(None)
+
+    return record_list
+
+def benchmark(clf):
+    print('_' * 80)
+    print("Training: ")
+    print(clf)
+    t0 = time()
+    clf.fit(X_train, y_train)
+    train_time = time() - t0
+    print("train time: %0.3fs" % train_time)
+
+    t0 = time()
+    pred = clf.predict(X_test)
+    test_time = time() - t0
+    print("test time:  %0.3fs" % test_time)
+
+    score = metrics.accuracy_score(y_test, pred)
+    print("accuracy:   %0.3f" % score)
+
+    if hasattr(clf, 'coef_'):
+        print("dimensionality: %d" % clf.coef_.shape[1])
+        print("density: %f" % density(clf.coef_))
+
+        if opts.print_top10 and feature_names is not None:
+            print("top 10 keywords per class:")
+            for i, label in enumerate(target_names):
+                top10 = np.argsort(clf.coef_[i])[-10:]
+                print(trim("%s: %s" % (label, " ".join(feature_names[top10]))))
+        print()
+
+    if opts.print_report:
+        print("classification report:")
+        print(metrics.classification_report(y_test, pred,
+                                            target_names=target_names))
+
+    if opts.print_cm:
+        print("confusion matrix:")
+        print(metrics.confusion_matrix(y_test, pred))
+
+    print()
+    clf_descr = str(clf).split('(')[0]
+    return clf_descr, score, train_time, test_time
+
+def main():
+    start_time = time.time()
+
+    all_strings = []
+    price_list = []
+    all_trigrams = set()
+
+    for index, row in train_data.iterrows():
+        price_list.append(row['price'])
+        strings = [word for word in word_features.clean_html(row["description"].lower()).split(' ') if word not in word_features._stopwords]
+        all_strings.append(strings.copy())
+    
+    train_set = get_record_list(train_data, all_strings, price_list, all_trigrams)
+
+    all_strings = []
+    price_list = []
+    all_trigrams = set()
+
+    for index, row in test_data.iterrows():
+        price_list.append(row['price'])
+        strings = [word for word in word_features.clean_html(row["description"].lower()).split(' ') if word not in word_features._stopwords]
+        all_strings.append(strings.copy())
+
+    test_set = get_record_list(test_data, all_strings, price_list, all_trigrams)
+    
+    print("--- generating record_list: %s seconds ---" % (time.time() - start_time))
+
+    target = open("result.txt", 'w')
+
+    target.truncate()
+
+    start_time = time.time()
+
+    classifier = nltk.DecisionTreeClassifier.train(train_set)
+    target.write("Decision Tree")
+    target.write("\n")
+    decision_tree_accuracy = nltk.classify.accuracy(classifier, test_set)
+    target.write(str(decision_tree_accuracy))
+    target.write("\n")
+    
+    print("Decision Tree", decision_tree_accuracy)
+
+    classifier = nltk.NaiveBayesClassifier.train(train_set)
+    target.write("Naive Bayes")
+    target.write("\n")
+    naive_bayes_accuracy = nltk.classify.accuracy(classifier, test_set)
+    target.write(str(naive_bayes_accuracy))
+    target.write("\n")
+
+    print("Naive Bayes", naive_bayes_accuracy)
+
+    print("--- training/classification: %s seconds ---" % (time.time() - start_time))
+
+    target.close()
+    '''
+    results = []
+    for clf, name in (
+            (RidgeClassifier(tol=1e-2, solver="lsqr"), "Ridge Classifier"),
+            (Perceptron(n_iter=50), "Perceptron"),
+            (PassiveAggressiveClassifier(n_iter=50), "Passive-Aggressive"),
+            (KNeighborsClassifier(n_neighbors=10), "kNN"),
+            (RandomForestClassifier(n_estimators=100), "Random forest")):
+        print('=' * 80)
+        print(name)
+        results.append(benchmark(clf))
+
+    for penalty in ["l2", "l1"]:
+        print('=' * 80)
+        print("%s penalty" % penalty.upper())
+        # Train Liblinear model
+        results.append(benchmark(LinearSVC(loss='l2', penalty=penalty,
+                                                dual=False, tol=1e-3)))
+
+        # Train SGD model
+        results.append(benchmark(SGDClassifier(alpha=.0001, n_iter=50,
+                                               penalty=penalty)))
+
+    # Train SGD with Elastic Net penalty
+    print('=' * 80)
+    print("Elastic-Net penalty")
+    results.append(benchmark(SGDClassifier(alpha=.0001, n_iter=50,
+                                           penalty="elasticnet")))
+
+    # Train NearestCentroid without threshold
+    print('=' * 80)
+    print("NearestCentroid (aka Rocchio classifier)")
+    results.append(benchmark(NearestCentroid()))
+
+    # Train sparse Naive Bayes classifiers
+    print('=' * 80)
+    print("Naive Bayes")
+    results.append(benchmark(MultinomialNB(alpha=.01)))
+    results.append(benchmark(BernoulliNB(alpha=.01)))
+
+    print('=' * 80)
+    print("LinearSVC with L1-based feature selection")
+    # The smaller C, the stronger the regularization.
+    # The more regularization, the more sparsity.
+    results.append(benchmark(Pipeline([
+      ('feature_selection', LinearSVC(penalty="l1", dual=False, tol=1e-3)),
+      ('classification', LinearSVC())
+    ])))
+
+    # make some plots
+
+    indices = np.arange(len(results))
+
+    results = [[x[i] for x in results] for i in range(4)]
+
+    clf_names, score, training_time, test_time = results
+    training_time = np.array(training_time) / np.max(training_time)
+    test_time = np.array(test_time) / np.max(test_time)
+
+    plt.figure(figsize=(12, 8))
+    plt.title("Score")
+    plt.barh(indices, score, .2, label="score", color='navy')
+    plt.barh(indices + .3, training_time, .2, label="training time",
+             color='c')
+    plt.barh(indices + .6, test_time, .2, label="test time", color='darkorange')
+    plt.yticks(())
+    plt.legend(loc='best')
+    plt.subplots_adjust(left=.25)
+    plt.subplots_adjust(top=.95)
+    plt.subplots_adjust(bottom=.05)
+
+    for i, c in zip(indices, clf_names):
+        plt.text(-.3, i, c)
+
+    plt.show()
+    '''
+
+if __name__ == '__main__':
+  main()
+
+'''
+clf = RandomForestClassifier()
+clf.fit(data, labels)
+
+importances = clf.feature_importances_
+np.argsort(importances)[::-1]
+
+feature_names = vectorizer.get_feature_names()
+top_words = []
+'''
+

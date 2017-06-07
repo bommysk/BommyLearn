@@ -15,7 +15,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.ManagedBean;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.SessionScoped;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.validator.ValidatorException;
 import javax.inject.Named;
 
 @Named(value = "forum")
@@ -508,6 +512,16 @@ public class Forum {
         }
         
         return studentClassMates;
+    }
+    
+    public void validateClass(FacesContext context, UIComponent component, Object value)
+            throws ValidatorException, SQLException {        
+        String submittedClass = value.toString();
+
+        if (submittedClass.equals("Select Class")) {
+            FacesMessage errorMessage = new FacesMessage("Wrong login/password");
+            throw new ValidatorException(errorMessage);
+        }
     }
     
 }

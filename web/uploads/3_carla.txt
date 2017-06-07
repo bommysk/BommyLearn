@@ -1,0 +1,125 @@
+/**************/
+/* Question 1 */
+/**************/
+
+create table cashier (
+	id integer primary key,
+	name text,
+	phoneNumber text
+);
+ 
+create table product (
+	id integer primary key,
+	name text,
+	price real check(price>0)
+);
+ 
+create table transaction (
+	id integer primary key,
+	date date,
+	cashierID integer,
+	foreign key (cashierID) references cashier
+);
+ 
+create table lineitem (
+	id integer primary key,
+	transactionID integer,
+	productID integer,
+	foreign key (transactionID) references transaction,
+	foreign key (productID) references product,
+	quantity real check(quantity > 0)
+);
+
+create materialized view cashier_sales as
+	(select cashierID, coalesce(count(*), 0) as count, coalesce(sum(quantity * price), 0) as revenue 
+		from cashier left join (transaction join lineitem on lineitem.transactionID = transaction.id 
+		join product on lineitem.productID = product.id) 
+		as X on X.cashierID = cashier.id 
+		group by cashierID);
+
+create materialized view product_sales as
+	(select productID, coalesce(count(*), 0) as count, coalesce(sum(quantity * price), 0) as revenue
+		from product left join (transaction join lineitem on lineitem.transactionID = transaction.id) 
+		as X on X.productID = product.id 
+		group by productID);
+
+create role manager login;
+grant select on table cashier_sales to manager;
+grant select on table product_sales to manager;
+create user bob with password 'password';
+create user tom with password 'password';
+grant manager to bob;
+grant manager to tom;
+
+/**************/
+/* Question 2 */
+/**************/
+
+/* Dimension Table */
+create table customer (
+	id integer primary key,
+	name text,
+	address text,
+	zipCode integer
+);
+
+/* Dimension Table */
+create table movie (
+	id integer primary key,
+	title text,
+	year integer,
+	length integer,
+	rating text
+);
+
+/* Dimension Table */
+create table movie_theater (
+	id integer primary key,
+	address text,
+	capacity integer
+);
+
+/* Dimension Table */
+create table projection (
+	id integer primary key,
+	startTime timestamp,
+	endTime timestamp
+);
+
+/* Fact Table */
+create table movie_viewing (
+	customerID integer,
+	projectionID integer,
+	movieTheaterID integer,
+	movieID integer,
+	price float,
+	foreign key(customerID) references customer,
+	foreign key(projectionID) references projection,
+	foreign key(movieTheaterID) references movie_theater,
+	foreign key(movieID) references movie 
+);
+
+/**************/
+/* Question 3 */
+/**************/
+
+create materialized view movie_sales as
+(select movie.id as movie_id, movie_theater.id as movie_theater_id, customer.zipCode, sum(price) as revenue from
+movie_viewing join projection on movie_viewing.projectionID = projection.id
+join movie on movie_viewing.movieID = movie.id
+join movie_theater on movie_viewing.movieTheaterID = movie_theater.id
+join customer on movie_viewing.customerID = customer.id
+group by grouping sets ((movie.id), (movie_theater.id), (customer.zipCode), ()));
+
+select movie_id, revenue from movie_sales 
+	where movie_id is not null and movie_theater_id is null and zipCode is null;
+
+select movie_theater_id, revenue from movie_sales 
+	where movie_id is null and movie_theater_id is not null and zipCode is null;
+
+select zipCode, revenue from movie_sales 
+	where movie_id is null and movie_theater_id is null and zipCode is not null;
+
+select revenue from movie_sales 
+	where movie_id is null and movie_theater_id is null and zipCode is null;
+
