@@ -82,22 +82,6 @@ VALUES('Medieval History', 'Study of European history from 800-1300.', 'MW', '03
 INSERT INTO class(name, description, day_schedule, start_time, end_time)
 VALUES('English', 'English', 'TR', '01:10 PM', '03:10 PM');
 
-DROP TABLE IF EXISTS teaches CASCADE;
-
-CREATE TABLE teaches (
-    teacher_id int NOT NULL,
-    class_id int NOT NULL,
-    PRIMARY KEY(class_id, teacher_id),
-    FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY(teacher_id) REFERENCES teacher ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-INSERT INTO teaches(teacher_id, class_id) VALUES(1, 1);
-
-INSERT INTO teaches(teacher_id, class_id) VALUES(1, 2);
-
-INSERT INTO teaches(teacher_id, class_id) VALUES(2, 3); 
-
 DROP TABLE IF EXISTS class_schedule CASCADE;
 
 CREATE TABLE class_schedule (
@@ -117,20 +101,6 @@ INSERT INTO class_schedule(class_id, student_id, teacher_id) VALUES(2, 1, 1);
 INSERT INTO class_schedule(class_id, student_id, teacher_id) VALUES(3, 11, 2);
 
 INSERT INTO class_schedule(class_id, student_id, teacher_id) VALUES(1, 11, 1);
-
-DROP TABLE IF EXISTS attend CASCADE;
-/*  attendance_outcome possible values are: “in progress”, “completed successfully”, “completed partially” and “has not completed class” */
-CREATE TABLE attend (
-    id serial PRIMARY KEY,
-    class_id int NOT NULL,
-    student_id int NOT NULL,
-    class_enrollment_date date NOT NULL,
-    class_drop_date date,
-    drop_class_reason text,
-    attendance_outcome text NOT NULL,
-    FOREIGN KEY(class_id) REFERENCES class ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY(student_id) REFERENCES student ON DELETE CASCADE ON UPDATE CASCADE
-);
 
 DROP TABLE IF EXISTS assignment CASCADE;
 
